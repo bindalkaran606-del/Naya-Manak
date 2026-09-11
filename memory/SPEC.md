@@ -82,3 +82,7 @@
 - Top utility bar uses Lato, plain project attribution and a clear official BIS link; removed the amber project badge. Desktop active navigation uses a red underline. Related dialogs retain focus/escape behavior with a compact red-rule document treatment and scroll-contained content.
 - Footer heading is an active `Official BIS resources` link to the existing official `https://www.bis.gov.in/?lang=en` destination, opens in a new tab with `noopener noreferrer`.
 - No backend, API, analysis engine, database, catalog records, dependencies, environment variables or deployment configuration changed. Existing mock analysis/PDF limitations are unchanged. Print styling remains scoped and intact.
+
+## Final typography consistency pass
+- Exactly two non-monospaced families: Instrument Sans for headings and Lato for body, controls, metadata, standard identifiers and exports. Removed IBM Plex Mono and Source Serif font imports; legacy `font-mono` utilities now intentionally resolve to Lato, including code/preformatted report text and print. Instrument Sans was already installed; no new dependency.
+- Small shared refinements only: restrained heading scale/weights, normal label tracking, quieter preset metadata, consistent button proportions and clearer product selection states. All application logic, data, resource links and deployment settings unchanged.

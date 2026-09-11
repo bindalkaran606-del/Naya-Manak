@@ -5,17 +5,17 @@
 @import "@fontsource/lato/400.css";
 @import "@fontsource/lato/700.css";
 @import "@fontsource/lato/900.css";
-@import "@fontsource-variable/source-serif-4";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource-variable/instrument-sans";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: 'Lato', 'Helvetica Neue', sans-serif;
-  --font-display: 'Source Serif 4 Variable', Georgia, serif;
+  --font-heading: 'Instrument Sans Variable', 'Instrument Sans', sans-serif;
+  --font-display: 'Instrument Sans Variable', 'Instrument Sans', sans-serif;
   --font-sans: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Retain legacy utility names without retaining the rejected typeface. */
+  --font-mono: 'Lato', 'Helvetica Neue', sans-serif;
+  --font-serif: 'Instrument Sans Variable', 'Instrument Sans', sans-serif;
 
   --color-bis-red: #B81D24;
   --color-bis-red-hover: #991319;
@@ -124,9 +124,9 @@
     font-weight: 600;
     font-optical-sizing: auto;
   }
-  /* Restrained technical typography; monospacing remains for actual data. */
+  /* Metadata uses the same proportional font as the rest of the interface. */
   .font-mono {
-    letter-spacing: 0.01em;
+    letter-spacing: normal;
   }
   /* Dialogs read as tabled documents, not chat cards */
   [data-slot="dialog-content"] {
@@ -293,6 +293,30 @@ body::before {
     .recent-register-row { padding: 14px 12px; }
     .catalog-record { padding: 18px 14px; }
   }
+}
+/* One two-font system across screens, portal dialogs and printed annexures. */
+:is(#root, [role="dialog"]) :is(h1, h2, h3, h4, h5, h6, [data-slot="dialog-title"]) {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.font-mono, pre, code, kbd, samp {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+:where(button, input, textarea, select, option) { font-family: var(--font-sans); }
+@media screen {
+  #root main h1 { font-size: clamp(24px, 2.5vw, 30px); line-height: 1.25; }
+  #root main :is(h2, h3, h4) { line-height: 1.4; }
+  [data-testid="landing-hero-headline"] { font-size: clamp(26px, 3vw, 36px); line-height: 1.25; }
+  [data-testid^="preset-card-"] .font-mono { font-weight: 400; letter-spacing: normal; font-size: 12px; }
+  :is(#root, [role="dialog"]) :is(.uppercase, .tracking-wider, .tracking-widest) { text-transform: none; letter-spacing: normal; }
+  .product-shortcut[aria-pressed="true"] { box-shadow: inset 3px 0 0 #B81D24; font-weight: 700; }
+  .product-shortcut:not([aria-pressed="true"]):hover { border-color: #9ba3ad; background: #FAF8F5; }
+  #root :is(input, textarea, select):focus-visible { outline-offset: 2px; }
+  #root [data-slot="button"] { border-radius: 2px; box-shadow: none; font-weight: 500; }
+  #root [data-slot="button"]:disabled { opacity: .5; }
+  [data-testid^="catalog-metadata-"] { line-height: 1.6; }
 }
 @keyframes workspace-enter { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {

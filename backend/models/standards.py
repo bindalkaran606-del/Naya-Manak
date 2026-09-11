@@ -51,7 +51,15 @@ class IndianStandard(BaseModel):
     keywords: List[str] = Field(default_factory=list)
 
 
+class ProductTemplate(BaseModel):
+    id: str
+    label: str
+
+
 class StandardsQueryResponse(BaseModel):
     standards: List[IndianStandard]
     total_count: int
     categories: List[str] = Field(default_factory=list)
+    products: List[ProductTemplate] = Field(default_factory=list)
+    outcome: str = "matched"
+    message: str = ""

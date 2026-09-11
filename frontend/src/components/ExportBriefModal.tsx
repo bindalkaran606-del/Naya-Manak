@@ -2,6 +2,8 @@ import React from "react";
 import { 
   Dialog, 
   DialogContent, 
+  DialogTitle,
+  DialogDescription,
   DialogFooter 
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -72,6 +74,8 @@ All bidders must furnish valid BIS Certification License (ISI Mark / CRS Registr
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[min(95vw,64rem)] sm:max-w-[64rem] max-h-[90vh] overflow-y-auto bg-[#FAF8F5] border-[#E5DFD5] p-0">
+        <DialogTitle className="sr-only" data-testid="export-dialog-title">Tender specification appendix</DialogTitle>
+        <DialogDescription className="px-6 pt-5 text-sm text-slate-600 no-print" data-testid="export-demo-disclaimer">Draft for officer review. Analysis and gap suggestions are simulated; confirm all catalog references with BIS before attaching this annexure to a tender.</DialogDescription>
         {/* Printable Official Document Wrapper — A4 annexure sheet */}
         <div
           id="print-root"
@@ -91,10 +95,10 @@ All bidders must furnish valid BIS Certification License (ISI Mark / CRS Registr
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[#0B132B] tracking-tight">
-                  TENDER SPECIFICATION APPENDIX: INDIAN STANDARDS CONFORMITY
+                  Tender specification appendix: Indian Standards
                 </h2>
                 <p className="text-xs text-slate-600 font-mono">
-                  MANAK AI · AI-Powered Recommendation Engine for Procurement (SIH 26108)
+                  MANAK AI · Procurement decision support · Draft for review
                 </p>
               </div>
             </div>

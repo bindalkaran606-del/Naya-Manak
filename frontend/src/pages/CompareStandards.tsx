@@ -42,7 +42,7 @@ export default function CompareStandards() {
     setParams(next, { replace: true });
   };
 
-  const { data: catalog } = useQuery({
+  const { data: catalog, isError: catalogError, refetch: retryCatalog } = useQuery({
     queryKey: ["standards", "compare-picker"],
     queryFn: () => manakApi.getStandards({ limit: 100 }),
   });
@@ -59,6 +59,7 @@ export default function CompareStandards() {
   const b = results[1]?.data as IndianStandard | undefined;
   const loading = results.some((r) => r.isLoading);
   const bothSelected = !!codeA && !!codeB;
+  const failed = catalogError || results.some(r => r.isError);
 
   const attributeRows = useMemo(() => {
     if (!a || !b) return [];
@@ -122,6 +123,7 @@ export default function CompareStandards() {
       onChange={(e) => setSide(side, e.target.value)}
       className="w-full text-xs px-3 py-2 border border-[#E5DFD5] bg-white text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#B81D24]"
       data-testid={`compare-select-${side}`}
+      aria-label={`Standard ${side.toUpperCase()}`}
     >
       <option value="">Select an Indian Standard…</option>
       {(catalog?.standards ?? []).map((std) => (
@@ -178,7 +180,7 @@ export default function CompareStandards() {
         </div>
 
         {/* Selectors */}
-        <div className="bg-white border border-[#E5DFD5] p-5 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-end no-print">
+        <div className="bg-white border border-[#E5DFD5] p-5 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-4 items-end no-print">
           <div className="space-y-1.5">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">Standard A</span>
             {picker("a", codeA, codeB)}
@@ -200,6 +202,8 @@ export default function CompareStandards() {
           </div>
         </div>
 
+        {failed && <div role="alert" className="border border-[#E5DFD5] bg-white p-6 space-y-3" data-testid="compare-error-state"><h2 className="text-base" data-testid="compare-error-heading">We couldn’t load a catalog record</h2><p className="text-sm text-slate-600" data-testid="compare-error-message">Check the selected standards or try again. Missing records are never replaced with another standard.</p><button className="text-sm text-[#B81D24] font-semibold" onClick={() => { retryCatalog(); results.forEach(r => { if (r.isError) r.refetch(); }); }} data-testid="compare-retry-button">Try again</button></div>}
+        <p className="text-sm text-slate-500 border-l-2 border-[#E5DFD5] pl-4" data-testid="compare-scope-note">This compares stored catalog summaries, not full publications. A shared clause number does not mean the clauses have the same purpose or are technically equivalent.</p>
         {/* Empty state */}
         {!bothSelected && (
           <div className="border border-dashed border-[#E5DFD5] bg-white p-12 text-center space-y-2" data-testid="compare-empty-state">
@@ -215,7 +219,7 @@ export default function CompareStandards() {
           <div className="p-12 text-center text-xs font-mono text-slate-500">Loading both standards…</div>
         )}
 
-        {bothSelected && a && b && (
+        {bothSelected && a && b && !failed && (
           <div className="space-y-8" data-testid="compare-result-panel">
             {/* Headline cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

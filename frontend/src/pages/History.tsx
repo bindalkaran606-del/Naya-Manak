@@ -9,6 +9,7 @@ import {
   PlusCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ModelTransparencyModal } from "@/components/ModelTransparencyModal";
@@ -22,9 +23,10 @@ export default function History() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSector, setSelectedSector] = useState("All");
   const [transparencyOpen, setTransparencyOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
-  const { data: analyses, isLoading } = useQuery({
-    queryKey: ["analyses"],
+  const { data: analyses, isLoading, isError, refetch } = useQuery({
+    queryKey: ["analyses", "history"],
     queryFn: () => manakApi.getAnalyses(50),
   });
 
@@ -32,15 +34,16 @@ export default function History() {
     mutationFn: manakApi.deleteAnalysis,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["analyses"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      setPendingDelete(null);
       toast.success("Procurement analysis removed from history");
     },
+    onError: () => toast.error("We couldn’t delete this record. Please try again."),
   });
 
   const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm("Are you sure you want to delete this procurement record?")) {
-      deleteMutation.mutate(id);
-    }
+    setPendingDelete(id);
   };
 
   const filteredAnalyses = analyses?.filter((item) => {
@@ -65,7 +68,7 @@ export default function History() {
         <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between border-b border-[#E5DFD5] pb-6 gap-3">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0B132B]">
-              Procurement Analysis History
+              Analysis history
             </h1>
             <p className="text-xs sm:text-sm text-slate-600">
               Audit log of previously evaluated procurement specifications, matched standards, and gap analyses.
@@ -78,7 +81,7 @@ export default function History() {
             data-testid="history-new-analysis-cta"
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            <span>New Analysis</span>
+            <span>New analysis</span>
           </Button>
         </div>
 
@@ -113,7 +116,7 @@ export default function History() {
 
         {/* History Table / List */}
         <div className="space-y-3">
-          {isLoading ? (
+          {isError ? <div className="border border-[#E5DFD5] p-6 bg-white space-y-3" role="alert" data-testid="history-error-state"><p data-testid="history-error-message">We couldn’t load your history. Your records have not been removed.</p><button onClick={() => refetch()} className="text-[#B81D24] text-sm font-semibold" data-testid="history-retry-button">Try again</button></div> : isLoading ? (
             <div className="p-12 text-center text-xs text-slate-500 font-mono">
               Loading procurement history records...
             </div>
@@ -139,7 +142,7 @@ export default function History() {
                     <span className="text-slate-700">{item.department}</span>
                     <span>·</span>
                     <span className="text-[#B81D24] font-semibold">
-                      {item.recommendations?.length || 0} Standards Identified
+                      {item.recommendations?.length || 0} standards recommended
                     </span>
                     <span>·</span>
                     <span className="flex items-center gap-1 text-slate-500">
@@ -151,8 +154,8 @@ export default function History() {
                       })}
                     </span>
                     <span>·</span>
-                    <span className="text-emerald-800 font-semibold">
-                      {item.gap_analysis?.readiness_score || 88}/100 Readiness
+                    <span className="text-slate-600 font-semibold" data-testid={`history-outcome-${item.id}`}>
+                      {item.outcome === "no_results" ? "No catalog match" : item.outcome === "needs_clarification" ? "Clarification needed" : item.outcome === "catalog_only" ? "Catalog review needed" : `Demo readiness: ${item.gap_analysis?.readiness_score ?? 0}/100`}
                     </span>
                   </div>
                 </div>
@@ -170,7 +173,7 @@ export default function History() {
                   </Button>
 
                   <span className="text-xs font-mono font-semibold text-[#0B132B] group-hover:text-[#B81D24] flex items-center gap-1">
-                    <span>Reopen Report</span>
+                    <span>Open report</span>
                     <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                   </span>
                 </div>
@@ -195,6 +198,16 @@ export default function History() {
       </main>
 
       <Footer />
+      <Dialog open={!!pendingDelete} onOpenChange={(open) => { if (!open && !deleteMutation.isPending) setPendingDelete(null); }}>
+        <DialogContent className="sm:max-w-md p-6" data-testid="history-delete-dialog">
+          <DialogTitle data-testid="history-delete-title">Delete this analysis?</DialogTitle>
+          <DialogDescription data-testid="history-delete-description">This removes the saved report from history. Catalog records and other analyses are not affected. This cannot be undone.</DialogDescription>
+          <DialogFooter>
+            <Button variant="outline" disabled={deleteMutation.isPending} onClick={() => setPendingDelete(null)} data-testid="history-delete-cancel">Keep analysis</Button>
+            <Button disabled={deleteMutation.isPending} onClick={() => { if (pendingDelete) deleteMutation.mutate(pendingDelete); }} data-testid="history-delete-confirm">{deleteMutation.isPending ? "Deleting…" : "Delete analysis"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ModelTransparencyModal
         open={transparencyOpen}

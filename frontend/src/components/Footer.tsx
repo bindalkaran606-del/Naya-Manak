@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-slate-600 text-xs leading-relaxed">
-              AI-driven recommendation & compliance decision-support engine for Indian Standards (IS Standards) in public procurement.
+              Indian Standards research and specification review for procurement teams. An independent academic prototype.
             </p>
             <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
           {/* Col 2: Procurement Standards */}
           <div className="space-y-2">
             <h4 className="font-semibold text-[#0B132B] text-xs uppercase tracking-wider font-mono">
-              Standards Ecosystem
+              Standards resources
             </h4>
             <ul className="space-y-1.5">
               <li>
@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
           {/* Col 3: Legal & GFR Compliance */}
           <div className="space-y-2">
             <h4 className="font-semibold text-[#0B132B] text-xs uppercase tracking-wider font-mono">
-              Compliance Framework
+              Procurement context
             </h4>
             <ul className="space-y-1.5">
               <li className="flex items-center gap-1.5">
@@ -87,7 +87,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-2 bg-[#F3EFEA] p-3.5 rounded-sm border border-[#E5DFD5]">
             <div className="flex items-center gap-1.5 text-[#0B132B] font-semibold text-xs">
               <ShieldCheck className="w-4 h-4 text-[#B81D24]" />
-              <span>Human Decision-Maker Mandate</span>
+              <span>Human review comes first</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
               MANAK AI assists procurement officers with standards discovery and gap analysis. Final technical specification formulation and vendor compliance remain under human executive authority.
@@ -107,7 +107,7 @@ export const Footer: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div>© 2026 MANAK AI · Developed for Smart India Hackathon 2026 (SIH 26108)</div>
             <div className="flex items-center gap-4">
-              <span>Ministry of Consumer Affairs, Food &amp; Public Distribution</span>
+              <span>Independent project · Not an official BIS service</span>
               <span>·</span>
               <span>New Delhi, India</span>
             </div>

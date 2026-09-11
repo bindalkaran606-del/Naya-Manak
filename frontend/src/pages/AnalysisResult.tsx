@@ -13,6 +13,7 @@ import {
   Edit3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -22,7 +23,7 @@ import { ModelTransparencyModal } from "@/components/ModelTransparencyModal";
 import { useQuery } from "@tanstack/react-query";
 import { manakApi } from "@/services/manakApi";
 import { toast } from "sonner";
-import type { RecommendedStandard, IndianStandard } from "@/types/standards";
+import type { RecommendedStandard } from "@/types/standards";
 
 export default function AnalysisResult() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,6 @@ export default function AnalysisResult() {
 
   const [expandedEvidence, setExpandedEvidence] = useState<{ [key: string]: boolean }>({});
   const [selectedStandardForModal, setSelectedStandardForModal] = useState<RecommendedStandard | null>(null);
-  const [standardDetailData, setStandardDetailData] = useState<IndianStandard | null>(null);
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [transparencyOpen, setTransparencyOpen] = useState(false);
   const [copiedSpec, setCopiedSpec] = useState(false);
@@ -45,15 +45,12 @@ export default function AnalysisResult() {
     setExpandedEvidence((prev) => ({ ...prev, [code]: !prev[code] }));
   };
 
-  const handleOpenStandardDetail = async (rec: RecommendedStandard) => {
-    setSelectedStandardForModal(rec);
-    try {
-      const data = await manakApi.getStandardByCode(rec.standard_code);
-      setStandardDetailData(data);
-    } catch {
-      setStandardDetailData(null);
-    }
-  };
+  const { data: standardDetailData, isLoading: detailLoading, isError: detailError } = useQuery({
+    queryKey: ["standard", selectedStandardForModal?.standard_code],
+    queryFn: () => manakApi.getStandardByCode(selectedStandardForModal!.standard_code),
+    enabled: !!selectedStandardForModal,
+  });
+  const handleOpenStandardDetail = (rec: RecommendedStandard) => setSelectedStandardForModal(rec);
 
   const handleCopyAmendment = () => {
     if (analysis?.gap_analysis?.recommended_spec_amendment) {
@@ -102,6 +99,31 @@ export default function AnalysisResult() {
     );
   }
 
+  if (["no_results", "needs_clarification", "catalog_only"].includes(analysis.outcome)) {
+    return <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
+      <Header onOpenTransparency={() => setTransparencyOpen(true)} />
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-8 py-12 space-y-6">
+        <p className="text-sm text-slate-500" data-testid="analysis-outcome-label">Requirement review · Available catalog</p>
+        <h1 className="text-3xl" data-testid="analysis-outcome-heading">{analysis.outcome === "needs_clarification" ? "Tell us a little more about the product" : analysis.outcome === "catalog_only" ? "Catalog references available for review" : "No relevant standard found"}</h1>
+        <section className="bg-white border border-[#E5DFD5] p-6 space-y-4" role="status" data-testid="analysis-outcome-panel">
+          <p className="text-base text-[#0B132B]" data-testid="analysis-outcome-message">{analysis.outcome_message}</p>
+          <p className="text-sm text-slate-600" data-testid="analysis-outcome-guidance">No applicability, relevance score or compliance conclusion has been inferred. The available catalog is a subset of BIS publications, not the complete national collection.</p>
+          <div className="border-t border-[#E5DFD5] pt-4">
+            <h2 className="text-sm font-semibold mb-2" data-testid="analysis-original-label">Your requirement</h2>
+            <p className="text-sm text-slate-600 whitespace-pre-wrap break-words" data-testid="analysis-original-text">{analysis.raw_text}</p>
+          </div>
+          {analysis.catalog_matches.map((standard, i) => <button key={standard.code} onClick={() => navigate(`/standards/${encodeURIComponent(standard.code)}`)} className="block w-full text-left p-4 border border-[#E5DFD5] hover:bg-[#FAF8F5] text-sm" data-testid={`analysis-catalog-reference-${i}`}><span className="block font-mono text-[#B81D24]" data-testid={`analysis-catalog-code-${i}`}>{standard.code}</span><span data-testid={`analysis-catalog-title-${i}`}>{standard.title}</span></button>)}
+        </section>
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={() => navigate("/new", { state: { initialText: analysis.raw_text, initialTitle: analysis.title } })} data-testid="analysis-refine-button">Refine requirement</Button>
+          <Button variant="outline" onClick={() => navigate("/standards")} data-testid="analysis-browse-catalog-button">Browse the catalog</Button>
+          <Button variant="ghost" onClick={() => navigate("/history")} data-testid="analysis-outcome-history-button">View history</Button>
+        </div>
+      </main>
+      <Footer /><ModelTransparencyModal open={transparencyOpen} onOpenChange={setTransparencyOpen} />
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header onOpenTransparency={() => setTransparencyOpen(true)} />
@@ -132,7 +154,7 @@ export default function AnalysisResult() {
               data-testid="edit-requirement-button"
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Requirement</span>
+              <span>Edit requirement</span>
             </Button>
 
             <Button
@@ -142,22 +164,25 @@ export default function AnalysisResult() {
               data-testid="export-tender-appendix-button"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Export Tender Appendix</span>
+              <span>Export tender appendix</span>
             </Button>
           </div>
         </div>
       </div>
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+        <div className="border-l-2 border-[#0B132B] bg-white p-4 text-sm text-slate-600" data-testid="analysis-grounding-notice">
+          <strong className="text-[#0B132B]">Demo analysis · Human review required.</strong> {analysis.outcome_message || "This saved report was produced by the original mock engine and has not been revalidated against the current catalog."} Confirm all technical values and clauses against the official BIS publication.
+        </div>
         {/* SECTION 1: REQUIREMENT ANALYSIS VIEW (Section 12 of prompt) */}
         <section className="bg-white rounded-sm border border-[#E5DFD5] shadow-xs p-6 sm:p-8 space-y-6 guilloche-watermark">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E5DFD5] pb-4 gap-2">
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#B81D24]">
-                Structured Intelligence Breakdown
+                Requirement overview
               </span>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0B132B]" data-testid="requirement-analysis-title">
-                Requirement Analysis
+                Requirement analysis
               </h2>
             </div>
             <div className="flex items-center gap-2">
@@ -165,7 +190,7 @@ export default function AnalysisResult() {
                 Sector: {analysis.sector}
               </span>
               <span className="text-[11px] font-mono px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-sm border border-emerald-200 font-semibold">
-                Parsed by MANAK Engine
+                Demo profile
               </span>
             </div>
           </div>
@@ -174,7 +199,7 @@ export default function AnalysisResult() {
             {/* Product */}
             <div className="space-y-1">
               <span className="text-xs font-mono uppercase text-slate-500 font-bold block">
-                Product Identified
+                Product identified
               </span>
               <p className="text-sm font-bold text-[#0B132B] leading-snug" data-testid="extracted-product-name">
                 {analysis.extracted_intelligence?.product_identified || analysis.title}
@@ -184,7 +209,7 @@ export default function AnalysisResult() {
             {/* Purpose */}
             <div className="space-y-1">
               <span className="text-xs font-mono uppercase text-slate-500 font-bold block">
-                Primary Purpose
+                Primary purpose
               </span>
               <p className="text-xs text-slate-700 leading-relaxed" data-testid="extracted-purpose">
                 {analysis.extracted_intelligence?.purpose}
@@ -194,7 +219,7 @@ export default function AnalysisResult() {
             {/* Target Operating Environment */}
             <div className="space-y-1">
               <span className="text-xs font-mono uppercase text-slate-500 font-bold block">
-                Operating Environment
+                Operating environment
               </span>
               <p className="text-xs text-slate-700 leading-relaxed">
                 {analysis.extracted_intelligence?.target_operating_environment}
@@ -205,7 +230,7 @@ export default function AnalysisResult() {
           {/* Keywords Row */}
           <div className="space-y-2 pt-2 border-t border-[#E5DFD5]">
             <span className="text-xs font-mono uppercase text-slate-500 font-bold block">
-              Extracted Technical Keywords
+              Technical keywords
             </span>
             <div className="flex flex-wrap gap-1.5" data-testid="extracted-keywords-container">
               {analysis.extracted_intelligence?.keywords?.map((kw, i) => (
@@ -222,9 +247,9 @@ export default function AnalysisResult() {
           {/* Key Parameters Table */}
           <div className="space-y-2 pt-2 border-t border-[#E5DFD5]">
             <span className="text-xs font-mono uppercase text-slate-500 font-bold block">
-              Key Technical Parameters Matrix
+              Technical parameters · Demonstration profile
             </span>
-            <div className="border border-[#E5DFD5] rounded-sm overflow-hidden">
+            <div className="border border-[#E5DFD5] rounded-sm overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[#FAF8F5] text-slate-700 text-[11px] font-mono border-b border-[#E5DFD5]">
                   <tr>
@@ -266,14 +291,14 @@ export default function AnalysisResult() {
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold tracking-tight text-[#0B132B]" data-testid="recommended-standards-title">
-                Recommended Standards
+                Recommended standards
               </h2>
               <span className="text-xs font-mono text-slate-500">
                 {analysis.recommendations?.length || 0} Standards Identified
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-600">
-              Standards most relevant to your procurement requirement, ranked by semantic and technical parameter alignment.
+              References available in the catalog. Demo relevance scores are illustrative, not calibrated confidence or a compliance decision.
             </p>
           </div>
 
@@ -327,7 +352,7 @@ export default function AnalysisResult() {
                           className="text-xs font-mono font-semibold text-slate-600 hover:text-[#0B132B] flex items-center gap-1.5 transition-colors"
                           data-testid={`toggle-evidence-${index}`}
                         >
-                          <span>Clause Evidence & Technical Proof ({rec.evidence_clauses.length} clauses matched)</span>
+                          <span>Catalog evidence ({rec.evidence_clauses.length} references)</span>
                           {isExpanded ? (
                             <ChevronUp className="w-3.5 h-3.5 text-slate-500" />
                           ) : (
@@ -366,7 +391,7 @@ export default function AnalysisResult() {
                         className="text-xs border-[#E5DFD5] text-[#0B132B] hover:bg-[#F3EFEA] flex items-center gap-1.5"
                         data-testid={`view-standard-detail-${index}`}
                       >
-                        <span>View Standard Details</span>
+                        <span>View standard details</span>
                         <ExternalLink className="w-3 h-3 text-slate-500" />
                       </Button>
                     </div>
@@ -382,7 +407,7 @@ export default function AnalysisResult() {
           <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b border-[#E5DFD5] pb-4 gap-4">
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#E67E22]">
-                Specification Gap Audit & Risk Mitigation
+                Specification review
               </span>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0B132B]" data-testid="manak-insight-heading">
                 MANAK Insight
@@ -510,8 +535,8 @@ export default function AnalysisResult() {
 
       {/* STANDARD DETAIL MODAL */}
       {selectedStandardForModal && (
-        <div className="fixed inset-0 z-50 bg-[#0B132B]/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-sm border border-[#E5DFD5] shadow-2xl p-6 sm:p-8 max-w-3xl w-full max-h-[85vh] overflow-y-auto space-y-6 guilloche-watermark">
+        <Dialog open={!!selectedStandardForModal} onOpenChange={(open) => { if (!open) setSelectedStandardForModal(null); }}>
+          <DialogContent className="sm:max-w-3xl w-[calc(100%-2rem)] p-6 sm:p-8 max-h-[85vh] overflow-y-auto space-y-6" data-testid="standard-reference-dialog">
             <div className="border-b border-[#E5DFD5] pb-4 flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -523,21 +548,10 @@ export default function AnalysisResult() {
                     qcoMandatory={selectedStandardForModal.qco_mandatory}
                   />
                 </div>
-                <h3 className="text-base font-bold text-[#0B132B]">
+                <DialogTitle className="text-base font-bold text-[#0B132B] pr-6" data-testid="standard-reference-dialog-title">
                   {selectedStandardForModal.standard_title}
-                </h3>
+                </DialogTitle>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedStandardForModal(null);
-                  setStandardDetailData(null);
-                }}
-                className="text-slate-500 hover:text-[#0B132B]"
-              >
-                ✕
-              </Button>
             </div>
 
             <div className="space-y-5 text-xs text-slate-700 leading-relaxed">
@@ -557,7 +571,7 @@ export default function AnalysisResult() {
                   Scope of Standard
                 </h4>
                 <p className="text-slate-600 leading-relaxed">
-                  {standardDetailData?.scope || "Specifies mandatory technical criteria, safety requirements, and test methods established by the Bureau of Indian Standards (BIS)."}
+                  {detailLoading ? "Loading the catalog record…" : detailError ? "The catalog record could not be loaded. No scope has been assumed." : standardDetailData?.scope || "No scope recorded in the available catalog."}
                 </p>
               </div>
 
@@ -596,7 +610,7 @@ export default function AnalysisResult() {
                     ))
                   ) : (
                     <div className="text-slate-500 pt-1">
-                      No pending amendment revisions. Standard is current in gazette registry.
+                      No amendment information recorded in the available catalog. Verify current status with BIS.
                     </div>
                   )}
                 </div>
@@ -632,15 +646,15 @@ export default function AnalysisResult() {
                 size="sm"
                 onClick={() => {
                   setSelectedStandardForModal(null);
-                  setStandardDetailData(null);
                 }}
                 className="bg-[#0B132B] text-white text-xs"
+                data-testid="standard-reference-close-button"
               >
-                Close View
+                Close
               </Button>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Tender Specification Appendix Export Modal */}

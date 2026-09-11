@@ -47,9 +47,9 @@ export default function Landing() {
       <Header onOpenTransparency={() => setTransparencyOpen(true)} />
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-20 sm:pt-24 sm:pb-28 overflow-hidden guilloche-watermark border-b border-[#E5DFD5]">
+      <section className="landing-intro relative pt-12 pb-16 sm:pt-20 sm:pb-20 overflow-hidden guilloche-watermark border-b border-[#E5DFD5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
+          <div className="max-w-3xl space-y-6">
             {/* Top Institutional Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E5DFD5] shadow-xs text-xs font-mono text-slate-700">
               <span className="w-2 h-2 rounded-full bg-[#B81D24] inline-block" />
@@ -67,8 +67,7 @@ export default function Landing() {
                 MANAK <span className="text-[#B81D24]">AI</span>
               </h1>
               <p className="text-sm sm:text-base text-slate-700 font-medium" data-testid="landing-wordmark-descriptor">
-                MANAK AI reads a procurement requirement and tells you which Indian Standards (IS) apply, why they
-                apply, and what your specification is still missing.
+                A research workspace for procurement requirements, Indian Standards and supporting references.
               </p>
             </div>
 
@@ -82,19 +81,19 @@ export default function Landing() {
             </h2>
 
             {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-              Understand procurement requirements. Discover applicable Indian Standards from the curated BIS knowledge base. Make better, legally sound specifications before tendering.
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
+              Understand your requirement. Explore the available catalog. Review the evidence before you finalize the specification.
             </p>
 
             {/* Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="pt-2 flex flex-col sm:flex-row items-start gap-4">
               <Button
                 onClick={() => navigate("/new")}
                 size="lg"
                 className="w-full sm:w-auto bg-[#B81D24] hover:bg-[#991319] text-white px-7 py-6 text-sm font-semibold shadow-md flex items-center justify-center gap-2 transition-all duration-200"
                 data-testid="landing-primary-cta-button"
               >
-                <span>Analyze a Requirement</span>
+                <span>Analyze a requirement</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
 
@@ -110,31 +109,31 @@ export default function Landing() {
             </div>
 
             {/* GFR & BIS Compliance Footnote */}
-            <div className="pt-4 flex items-center justify-center gap-6 text-xs text-slate-500 font-mono">
+            <div className="pt-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                GFR 2017 Rule 144 Aligned
+                Curated catalog
               </span>
               <span className="hidden sm:inline text-slate-300">•</span>
               <span className="flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-slate-700" />
-                Mandatory QCO Detection
+                Catalog references
               </span>
               <span className="hidden sm:inline text-slate-300">•</span>
               <span className="flex items-center gap-1.5">
                 <Scale className="w-3.5 h-3.5 text-slate-700" />
-                Human Oversight Mandate
+                Human oversight
               </span>
             </div>
           </div>
 
           {/* Quick Interactive Requirement Box on Landing */}
-          <div className="mt-14 max-w-3xl mx-auto bg-white rounded-sm border border-[#E5DFD5] shadow-lg p-4 sm:p-6 transition-all duration-300">
+          <div className="mt-10 max-w-3xl bg-white rounded-sm border border-[#E5DFD5] shadow-xs p-4 sm:p-6">
             <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#B81D24]" />
                 <span className="text-xs font-semibold text-[#0B132B] uppercase tracking-wider font-mono">
-                  Quick Requirement Test Bench
+                  Start with your requirement
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
@@ -169,14 +168,14 @@ export default function Landing() {
 
               <div className="pt-2 flex items-center justify-between">
                 <span className="text-[11px] text-slate-500">
-                  Ready to evaluate against 22,000+ Indian Standards
+                  Checks the available catalog only
                 </span>
                 <Button
                   onClick={handleQuickAnalyze}
                   className="bg-[#0B132B] hover:bg-slate-800 text-white text-xs px-4 py-2 flex items-center gap-1.5 shadow-xs"
                   data-testid="landing-quick-analyze-submit"
                 >
-                  <span>Evaluate Requirement</span>
+                  <span>Review requirement</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -194,7 +193,7 @@ export default function Landing() {
                 {stats?.total_standards_indexed ?? 0}
               </span>
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wider font-mono mt-1 block">
-                IS Standards in Demo Corpus
+                Standards in the catalog
               </span>
             </div>
 
@@ -203,7 +202,7 @@ export default function Landing() {
                 {stats?.qco_mandatory_standards_count ?? 0}
               </span>
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wider font-mono mt-1 block">
-                Under Mandatory QCO
+                QCO catalog entries
               </span>
             </div>
 
@@ -212,7 +211,7 @@ export default function Landing() {
                 {stats?.total_analyses_completed ?? 0}
               </span>
               <span className="text-xs text-slate-500 font-medium uppercase tracking-wider font-mono mt-1 block">
-                Requirements Analysed
+                Saved requirements
               </span>
             </div>
 
@@ -233,13 +232,13 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#B81D24]">
-              Intelligent Decision Support Architecture
+              How it works
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#0B132B] tracking-tight">
-              From requirement text to certified Indian Standards in four steps.
+              From a requirement to an informed specification.
             </h2>
             <p className="text-sm text-slate-600">
-              MANAK AI combines structured technical entity extraction with deep semantic retrieval over the official Bureau of Indian Standards (BIS) taxonomy.
+              Explore the workflow using existing demonstration profiles and a curated catalog. This version does not connect to a live RAG or language model service.
             </p>
           </div>
 
@@ -250,9 +249,9 @@ export default function Landing() {
                 <div className="w-10 h-10 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] flex items-center justify-center font-mono font-bold text-sm text-[#0B132B]">
                   01
                 </div>
-                <h3 className="text-base font-bold text-[#0B132B]">Requirement Ingestion</h3>
+                <h3 className="text-base font-bold text-[#0B132B]">Describe the requirement</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Enter tender specifications via plain text or upload procurement PDF documents directly from GeM, CPWD, or state portals.
+                  Paste text from your specification, or explore the simulated PDF intake using an editable example.
                 </p>
               </CardContent>
             </Card>
@@ -263,9 +262,9 @@ export default function Landing() {
                 <div className="w-10 h-10 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] flex items-center justify-center font-mono font-bold text-sm text-[#0B132B]">
                   02
                 </div>
-                <h3 className="text-base font-bold text-[#0B132B]">Entity & Parameter Parsing</h3>
+                <h3 className="text-base font-bold text-[#0B132B]">Review the product</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Extracts product classification, intended purpose, operating environment, electrical/mechanical parameters, and safety thresholds.
+                  Review the demonstration product profile. When a query is too broad, clarify the product and intended use.
                 </p>
               </CardContent>
             </Card>
@@ -276,9 +275,9 @@ export default function Landing() {
                 <div className="w-10 h-10 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] flex items-center justify-center font-mono font-bold text-sm text-[#B81D24]">
                   03
                 </div>
-                <h3 className="text-base font-bold text-[#0B132B]">IS Ranking & Evidence</h3>
+                <h3 className="text-base font-bold text-[#0B132B]">Inspect the references</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Retrieves and ranks applicable IS standards with mathematical relevance scores, why-recommended summaries, and clause-level proof.
+                  Inspect catalog-backed standards and clause summaries. A missing record is never replaced with an invented IS number.
                 </p>
               </CardContent>
             </Card>
@@ -289,9 +288,9 @@ export default function Landing() {
                 <div className="w-10 h-10 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] flex items-center justify-center font-mono font-bold text-sm text-emerald-800">
                   04
                 </div>
-                <h3 className="text-base font-bold text-[#0B132B]">MANAK Insight & Gaps</h3>
+                <h3 className="text-base font-bold text-[#0B132B]">Consider the gaps</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Identifies omitted test parameters, flags ambiguous phrasing, and produces ready-to-paste NIT clauses and printable tender appendix.
+                  Review illustrative gaps and export a draft annexure. Confirm applicability and technical requirements with BIS before use.
                 </p>
               </CardContent>
             </Card>
@@ -305,10 +304,10 @@ export default function Landing() {
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-4">
             <div>
               <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#B81D24]">
-                Curated Standards Ecosystem
+                Explore the collection
               </span>
               <h2 className="text-2xl font-bold text-[#0B132B] tracking-tight mt-1">
-                Major Public Procurement Sectors
+                Procurement sectors
               </h2>
             </div>
             <Link
@@ -322,37 +321,37 @@ export default function Landing() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Sector 1 */}
             <div className="p-5 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] space-y-2">
-              <span className="text-xs font-mono font-semibold text-[#B81D24]">ELECTROTECHNICAL (ETD)</span>
+              <span className="text-xs font-mono font-semibold text-[#B81D24]">Electrotechnical (ETD)</span>
               <h4 className="font-bold text-[#0B132B] text-sm">Lighting, Drivers & Energy Equipment</h4>
               <p className="text-xs text-slate-600">
                 Luminaires, LED controlgear, distribution transformers, low-voltage switchgear, cables, and energy meters under mandatory CRS and ISI schemes.
               </p>
               <div className="pt-2 text-[11px] font-mono text-slate-500">
-                Key Standards: IS 10322, IS 16107, IS 15885, IS 1180
+                Browse lighting, cables and transformer records in the catalog
               </div>
             </div>
 
             {/* Sector 2 */}
             <div className="p-5 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] space-y-2">
-              <span className="text-xs font-mono font-semibold text-[#0B132B]">CIVIL ENGINEERING (CED)</span>
-              <h4 className="font-bold text-[#0B132B] text-sm">Steel, Cement & Highway Infrastructure</h4>
+              <span className="text-xs font-mono font-semibold text-[#0B132B]">Civil engineering (CED)</span>
+              <h4 className="font-bold text-[#0B132B] text-sm">Steel and construction materials</h4>
               <p className="text-xs text-slate-600">
-                TMT reinforcement steel (Fe 500D/550D), structural steel girders, Ordinary Portland Cement, concrete codes, and ductile seismic detailing.
+                Explore stored records for reinforcing bars, structural steel and concrete. Coverage varies by product.
               </p>
               <div className="pt-2 text-[11px] font-mono text-slate-500">
-                Key Standards: IS 1786, IS 456, IS 2062, IS 13920
+                Product shortcuts clearly show when no catalog record is available
               </div>
             </div>
 
             {/* Sector 3 */}
             <div className="p-5 rounded-sm bg-[#FAF8F5] border border-[#E5DFD5] space-y-2">
-              <span className="text-xs font-mono font-semibold text-emerald-800">WATER & UTILITIES (CED 50)</span>
+              <span className="text-xs font-mono font-semibold text-[#0B132B]">Water and utilities</span>
               <h4 className="font-bold text-[#0B132B] text-sm">Pipes & Public Drinking Water Supply</h4>
               <p className="text-xs text-slate-600">
                 High-Density Polyethylene (HDPE PE-100) pipes, ductile iron pressure pipes, and jointing standards for Jal Jeevan Mission projects.
               </p>
               <div className="pt-2 text-[11px] font-mono text-slate-500">
-                Key Standards: IS 4984, IS 7634, IS 8329
+                Browse water and pipe records in the available catalog
               </div>
             </div>
           </div>
@@ -366,7 +365,7 @@ export default function Landing() {
             Ready to evaluate your procurement specification?
           </h2>
           <p className="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
-            Eliminate costly tender amendments and ensure full compliance with Rule 144 of the General Financial Rules (GFR 2017).
+            Bring standards research, catalog evidence and specification review into one workspace. The final decision remains with your procurement team.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
@@ -375,7 +374,7 @@ export default function Landing() {
               className="bg-[#B81D24] hover:bg-[#991319] text-white px-8 py-6 text-sm font-semibold shadow-lg flex items-center gap-2"
               data-testid="landing-bottom-cta-button"
             >
-              <span>Start Procurement Analysis</span>
+              <span>Start a requirement review</span>
               <ArrowRight className="w-4 h-4" />
             </Button>
             <Button
@@ -385,7 +384,7 @@ export default function Landing() {
               className="bg-transparent hover:bg-white/10 text-slate-200 border-slate-700 px-6 py-6 text-sm"
               data-testid="landing-methodology-button"
             >
-              <span>Methodology & Scope</span>
+              <span>Scope and sources</span>
             </Button>
           </div>
         </div>

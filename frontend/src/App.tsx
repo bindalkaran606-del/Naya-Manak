@@ -9,10 +9,12 @@ import StandardDetail from "@/pages/StandardDetail";
 import CompareStandards from "@/pages/CompareStandards";
 import History from "@/pages/History";
 import Login from "@/pages/Login";
+import { ScrollReset } from "@/components/ScrollReset";
 
 export default function App() {
   return (
     <>
+      <ScrollReset />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />

@@ -29,7 +29,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
             </div>
             <div>
               <DialogTitle className="text-lg font-bold text-[#0B132B]">
-                MANAK AI System Architecture & Model Transparency
+                Scope and sources
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500 font-mono">
                 Smart India Hackathon 2026 · Problem Statement SIH 26108
@@ -43,27 +43,27 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 font-semibold text-[#0B132B] text-sm">
               <Cpu className="w-4 h-4 text-[#B81D24]" />
-              <span>1. Multi-Stage Recommendation Pipeline</span>
+              <span>1. How this version works</span>
             </div>
             <p className="text-slate-600">
-              MANAK AI combines structured technical entity extraction with semantic similarity retrieval over the official Bureau of Indian Standards (BIS) knowledge base. The decision-support pipeline operates in 4 verified stages:
+              This checked-out version uses a mock heuristic analysis engine and an existing MongoDB catalog. It does not call a live LLM or vector retrieval service. Catalog references are the source for standard identities and evidence; demonstration scores and gap suggestions are not verified compliance findings.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div className="p-3 bg-white rounded-sm border border-[#E5DFD5]">
-                <span className="font-mono font-bold text-[#B81D24] block">Stage 1: Entity & Parameter Parsing</span>
-                <span className="text-[11px] text-slate-600">Extracts product classification, intended scope, operating environmental bounds, and numerical parameters (efficacy, pressure, yield stress).</span>
+                <span className="font-semibold text-[#B81D24] block">Requirement review</span>
+                <span className="text-sm text-slate-600">Narrow product checks protect the existing demo profiles from unrelated or ambiguous queries.</span>
               </div>
               <div className="p-3 bg-white rounded-sm border border-[#E5DFD5]">
-                <span className="font-mono font-bold text-[#0B132B] block">Stage 2: Hybrid Semantic Vector Search</span>
-                <span className="text-[11px] text-slate-600">Matches requirement embedding vectors against curated IS standard corpus with technical committee taxonomy cross-referencing.</span>
+                <span className="font-semibold text-[#0B132B] block">Catalog lookup</span>
+                <span className="text-sm text-slate-600">Product templates browse existing records. They do not synthesize IS numbers or substitute for semantic RAG.</span>
               </div>
               <div className="p-3 bg-white rounded-sm border border-[#E5DFD5]">
-                <span className="font-mono font-bold text-[#0B132B] block">Stage 3: Clause-Level Evidence Alignment</span>
-                <span className="text-[11px] text-slate-600">Retrieves exact standard clauses, test methods, and tolerance thresholds to provide mathematical explainability for each recommendation.</span>
+                <span className="font-semibold text-[#0B132B] block">Catalog-backed references</span>
+                <span className="text-sm text-slate-600">New recommendations use titles, status and clause summaries from stored records. Check the official publication before use.</span>
               </div>
               <div className="p-3 bg-white rounded-sm border border-[#E5DFD5]">
-                <span className="font-mono font-bold text-[#E67E22] block">Stage 4: MANAK Insight & Gap Audit</span>
-                <span className="text-[11px] text-slate-600">Audits the tender specification against mandatory Quality Control Orders (QCO) and flags missing testing parameters before tender publication.</span>
+                <span className="font-semibold text-[#0B132B] block">MANAK Insight</span>
+                <span className="text-sm text-slate-600">Existing demonstration gaps remain available for supported profiles. No gaps or scores are invented for unmatched requirements.</span>
               </div>
             </div>
           </div>
@@ -72,10 +72,10 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 font-semibold text-[#0B132B] text-sm">
               <Database className="w-4 h-4 text-[#B81D24]" />
-              <span>2. Curated Knowledge Base Coverage</span>
+              <span>2. A curated collection, not complete BIS coverage</span>
             </div>
             <p className="text-slate-600">
-              The engine indexes standards across 14 BIS Division Councils, with high-density clause resolution in primary public procurement sectors:
+              The catalog contains selected procurement standards. Product shortcuts may have no matching records; this does not mean a standard does not exist outside this collection.
             </p>
             <div className="p-3.5 bg-[#F3EFEA] rounded-sm border border-[#E5DFD5] space-y-2">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px]">
@@ -87,7 +87,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
                 <div>• Personal Protective Gear</div>
               </div>
               <p className="text-[11px] text-slate-500 pt-1 border-t border-[#E5DFD5]">
-                * Dataset scope disclaimer: This demonstration prototype operates over a curated, verified corpus of critical procurement standards. Full national deployment connects to the complete 22,000+ BIS active standards gazetted registry.
+                Catalog availability is not proof of applicability. Status, clauses and Quality Control Orders should be checked with BIS before finalizing a specification.
               </p>
             </div>
           </div>
@@ -96,10 +96,10 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 font-semibold text-[#0B132B] text-sm">
               <Scale className="w-4 h-4 text-[#B81D24]" />
-              <span>3. General Financial Rules (GFR 2017) & GeM Alignment</span>
+              <span>3. Procurement context</span>
             </div>
             <p className="text-slate-600">
-              Under <strong>Rule 144 of the General Financial Rules (GFR) 2017</strong>, public procurement tenders issued by Ministries, Departments, and Public Sector Undertakings (PSUs) must specify Indian Standards established by BIS. MANAK AI ensures full compliance with statutory <strong>Quality Control Orders (QCO)</strong> notified under the BIS Act, 2016.
+              Use this tool to support research for procurement specifications. It does not guarantee compliance with the General Financial Rules, Quality Control Orders or certification requirements, and it is not an official BIS service.
             </p>
           </div>
 
@@ -107,7 +107,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
           <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-sm space-y-1.5">
             <div className="flex items-center gap-2 font-semibold text-amber-900">
               <AlertCircle className="w-4 h-4 text-amber-700" />
-              <span>Human-in-the-Loop Decision Support Mandate</span>
+              <span>The procurement officer makes the final decision</span>
             </div>
             <p className="text-[11px] text-amber-800 leading-relaxed">
               MANAK AI is strictly designed as an intelligent decision-support instrument for procurement committees. It generates evidence-backed recommendations and flags specification ambiguities, but does not replace the human judgment of authorized procurement officers.
@@ -123,7 +123,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
               rel="noopener noreferrer"
               className="text-xs text-[#B81D24] hover:underline flex items-center gap-1 font-mono"
             >
-              Visit Official BIS Portal (bis.gov.in)
+              Visit the official BIS website
               <ExternalLink className="w-3 h-3" />
             </a>
             <Button
@@ -132,7 +132,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
               className="bg-[#0B132B] text-white text-xs"
               data-testid="transparency-modal-done-button"
             >
-              Acknowledge & Close
+              Close
             </Button>
           </div>
         </DialogFooter>

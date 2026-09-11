@@ -4,6 +4,7 @@ import re
 import urllib.parse
 from lib.db import db
 from models.standards import IndianStandard, StandardsQueryResponse
+from lib.catalog_discovery import PRODUCTS, NO_RESULTS, CLARIFY, product_filter, ambiguous_search
 
 router = APIRouter(tags=["standards"])
 
@@ -14,10 +15,15 @@ async def list_standards(
     category: Optional[str] = Query(None, description="Filter by category"),
     status: Optional[str] = Query(None, description="Filter by status (current, under_revision, withdrawn)"),
     qco_only: Optional[bool] = Query(False, description="Filter only QCO mandatory standards"),
-    limit: int = Query(50, le=100),
+    product: Optional[str] = Query(None, description="Product discovery template"),
+    limit: int = Query(50, ge=1, le=100),
     skip: int = Query(0, ge=0),
 ):
     query = {}
+    if product:
+        if product not in PRODUCTS:
+            raise HTTPException(status_code=400, detail="Unknown product template. Choose a product from the catalog.")
+        query.update(product_filter(product))
     if category and category != "All":
         query["category"] = category
     if status and status != "All":
@@ -28,7 +34,8 @@ async def list_standards(
     if search and search.strip():
         term = re.escape(search.strip())
         # Normalise "IS10322" / "is 10322" style queries against stored codes
-        loose_code = term.replace(r"\ ", r"\s*")
+        loose_code = re.sub(r"^IS\s*(?=\d)", "IS ", search.strip(), flags=re.I)
+        loose_code = re.escape(loose_code).replace(r"\ ", r"\s*")
         query["$or"] = [
             {"code": {"$regex": loose_code, "$options": "i"}},
             {"title": {"$regex": term, "$options": "i"}},
@@ -38,6 +45,9 @@ async def list_standards(
             {"scope": {"$regex": term, "$options": "i"}},
         ]
 
+    clarification = bool(search and ambiguous_search(search) and not product)
+    if clarification:
+        query["code"] = {"$in": []}
     cursor = db.standards.find(query, {"_id": 0}).sort("code", 1).skip(skip).limit(limit)
     standards_list = await cursor.to_list(limit)
     total_count = await db.standards.count_documents(query)
@@ -47,6 +57,9 @@ async def list_standards(
         standards=[IndianStandard(**std) for std in standards_list],
         total_count=total_count,
         categories=categories,
+        products=[{"id": key, "label": value[0]} for key, value in PRODUCTS.items()],
+        outcome="needs_clarification" if clarification else ("matched" if total_count else "no_results"),
+        message=CLARIFY if clarification else ("" if total_count else NO_RESULTS),
     )
 
 
@@ -145,9 +158,9 @@ async def get_standard_by_code(code: str):
     decoded_code = urllib.parse.unquote(code).strip()
     doc = await db.standards.find_one({"code": decoded_code}, {"_id": 0})
     if not doc:
-        # Try case-insensitive substring or normalized search
+        # Exact normalized identity only; never guess a part/version from a prefix.
         doc = await db.standards.find_one(
-            {"code": {"$regex": f"^{decoded_code}", "$options": "i"}},
+            {"code": {"$regex": "^" + re.escape(decoded_code).replace(r"\ ", r"\s*") + "$", "$options": "i"}},
             {"_id": 0},
         )
     if not doc:

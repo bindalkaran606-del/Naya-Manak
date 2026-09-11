@@ -79,6 +79,11 @@ class ProcurementAnalysisCreate(BaseModel):
     document_name: Optional[str] = None
 
 
+class CatalogReference(BaseModel):
+    code: str
+    title: str
+
+
 class ProcurementAnalysis(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
@@ -93,6 +98,10 @@ class ProcurementAnalysis(BaseModel):
     extracted_intelligence: ExtractedIntelligence
     recommendations: List[RecommendedStandard] = Field(default_factory=list)
     gap_analysis: GapAnalysis
+    outcome: str = "legacy_demo"
+    outcome_message: str = ""
+    catalog_matches: List[CatalogReference] = Field(default_factory=list)
+    engine_mode: str = "mock_heuristic"
 
 
 class AnalyticsStats(BaseModel):

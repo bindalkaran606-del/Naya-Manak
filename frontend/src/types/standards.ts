@@ -46,10 +46,18 @@ export interface IndianStandard {
   keywords: string[];
 }
 
+export interface ProductTemplate {
+  id: string;
+  label: string;
+}
+
 export interface StandardsQueryResponse {
   standards: IndianStandard[];
   total_count: number;
   categories: string[];
+  products: ProductTemplate[];
+  outcome: string;
+  message: string;
 }
 
 export interface TechnicalParameter {
@@ -127,6 +135,11 @@ export interface ProcurementAnalysisCreate {
   document_name?: string;
 }
 
+export interface CatalogReference {
+  code: string;
+  title: string;
+}
+
 export interface ProcurementAnalysis {
   id: string;
   title: string;
@@ -141,6 +154,10 @@ export interface ProcurementAnalysis {
   extracted_intelligence: ExtractedIntelligence;
   recommendations: RecommendedStandard[];
   gap_analysis: GapAnalysis;
+  outcome: string;
+  outcome_message: string;
+  catalog_matches: CatalogReference[];
+  engine_mode: string;
 }
 
 export interface AnalyticsStats {

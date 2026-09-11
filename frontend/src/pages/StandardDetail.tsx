@@ -17,6 +17,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ModelTransparencyModal } from "@/components/ModelTransparencyModal";
 import { useQuery } from "@tanstack/react-query";
 import { manakApi } from "@/services/manakApi";
+import { ApiError } from "@/lib/api";
 import { toast } from "sonner";
 
 export default function StandardDetail() {
@@ -48,8 +49,8 @@ export default function StandardDetail() {
           <div className="w-10 h-10 rounded-sm bg-[#B81D24] text-white flex items-center justify-center font-bold text-lg mx-auto animate-pulse">
             म
           </div>
-          <h2 className="text-lg font-bold text-[#0B132B]">Loading Indian Standard Specifications...</h2>
-          <p className="text-xs text-slate-500 font-mono">Fetching official BIS gazette parameters</p>
+          <h2 className="text-lg font-bold text-[#0B132B]">Loading standard details…</h2>
+          <p className="text-xs text-slate-500 font-mono">Retrieving the available catalog record</p>
         </div>
         <Footer />
       </div>
@@ -62,9 +63,9 @@ export default function StandardDetail() {
         <Header />
         <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-20 text-center space-y-4">
           <AlertTriangle className="w-12 h-12 text-rose-600 mx-auto" />
-          <h2 className="text-xl font-bold text-[#0B132B]">Standard Not Found</h2>
+          <h2 className="text-xl font-bold text-[#0B132B]" data-testid="standard-error-heading">{error instanceof ApiError && error.status === 404 ? "Standard not found in the catalog" : "We couldn’t load this standard"}</h2>
           <p className="text-xs text-slate-600 leading-relaxed">
-            The Indian Standard '{decodedCode}' was not found in the curated knowledge base.
+            {error instanceof ApiError && error.status === 404 ? `No record for '${decodedCode}' was found in the available catalog. No substitute has been selected.` : "The catalog service is unavailable. Please return to the catalog and try again; this does not mean the standard is missing."}
           </p>
           <Button
             onClick={() => navigate("/standards")}
@@ -143,17 +144,17 @@ export default function StandardDetail() {
               <span className="font-semibold text-[#0B132B]">{standard.category}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[10px] font-mono uppercase">Technical Committee</span>
+              <span className="text-slate-500 block text-[10px] font-mono uppercase">Technical committee</span>
               <span className="font-semibold text-[#0B132B]">{standard.technical_committee}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[10px] font-mono uppercase">ICS Code</span>
+              <span className="text-slate-500 block text-[10px] font-mono uppercase">ICS code</span>
               <span className="font-mono font-semibold text-[#0B132B]">{standard.ics_code}</span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[10px] font-mono uppercase">Gazetted Year</span>
+              <span className="text-slate-500 block text-[10px] font-mono uppercase">Reaffirmation</span>
               <span className="font-mono font-semibold text-[#0B132B]">
-                {standard.reaffirmation_year ? `Reaffirmed ${standard.reaffirmation_year}` : "Active"}
+                {standard.reaffirmation_year ? `Reaffirmed ${standard.reaffirmation_year}` : "Not recorded"}
               </span>
             </div>
           </div>

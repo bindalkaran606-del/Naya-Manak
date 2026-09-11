@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Optional
 import uuid
+import re
 from datetime import datetime, timezone
 from lib.db import db
 from lib.dates import today_iso
+from lib.catalog_discovery import assess_requirement, NO_RESULTS
 from models.analysis import (
     ProcurementAnalysis,
     ProcurementAnalysisCreate,
@@ -512,7 +514,29 @@ async def analyze_requirement(payload: ProcurementAnalysisCreate):
     if not payload.raw_text or len(payload.raw_text.strip()) < 10:
         raise HTTPException(status_code=400, detail="Procurement requirement text is too short. Please provide at least 10 characters.")
 
-    heuristics = determine_sector_and_heuristics(payload.raw_text, payload.title)
+    outcome, message, profile, catalog_matches = await assess_requirement(db, payload.raw_text)
+    if outcome != "matched":
+        result = ProcurementAnalysis(
+            title=payload.title or payload.raw_text.strip()[:100],
+            sector=payload.sector or "General", department=payload.department or "Procurement Division",
+            conformity_scheme=payload.conformity_scheme, source_type=payload.source_type,
+            raw_text=payload.raw_text, document_name=payload.document_name, created_at=today_iso(),
+            status=outcome, outcome=outcome, outcome_message=message, catalog_matches=catalog_matches,
+            extracted_intelligence=ExtractedIntelligence(product_identified="Not established", purpose="Not established", target_operating_environment="Not established"),
+            gap_analysis=GapAnalysis(readiness_score=0, compliance_rating="Not assessed", recommended_spec_amendment=""),
+        )
+        await db.analyses.insert_one(result.model_dump())
+        return result
+
+    # Keep the existing demo profiles; a conservative product gate prevents the
+    # legacy catch-all from returning transformer standards for unknown products.
+    heuristics = determine_sector_and_heuristics(profile)
+    candidates = await db.standards.find({"code": {"$in": [item["code"] for item in heuristics["matched_standards"]]}}, {"_id": 0}).to_list(100)
+    by_code = {std["code"]: std for std in candidates}
+    all_codes = set(await db.standards.distinct("code"))
+    available_numbers = {match.group(1) for code in all_codes if (match := re.search(r"IS(?:/IEC)?\s*(\d+)", code))}
+    def grounded_reference(text):
+        return all(number in available_numbers for number in re.findall(r"\bIS(?:/IEC)?\s*(\d+)", text))
 
     analysis_id = str(uuid.uuid4())
     now_str = today_iso()
@@ -524,33 +548,36 @@ async def analyze_requirement(payload: ProcurementAnalysisCreate):
         purpose=heuristics["purpose"],
         target_operating_environment=heuristics["env"],
         keywords=heuristics["keywords"],
-        technical_parameters=heuristics["parameters"],
+        technical_parameters=[p for p in heuristics["parameters"] if grounded_reference(p.benchmark_is_norm or "")],
     )
 
     recs = []
     for item in heuristics["matched_standards"]:
+        std = by_code.get(item["code"])
+        if not std:
+            continue
         recs.append(
             RecommendedStandard(
-                standard_code=item["code"],
-                standard_title=item["title"],
+                standard_code=std["code"],
+                standard_title=std["title"],
                 relevance_score=item["relevance"],
-                status=item["status"],
-                category=item["category"],
-                technical_committee=item.get("tc", "BIS Technical Committee"),
-                qco_mandatory=item["qco"],
-                why_recommended=item["why"],
-                evidence_clauses=item["evidence"],
-                related_standards_summary=item["related"],
+                status=std["status"],
+                category=std["category"],
+                technical_committee=std["technical_committee"],
+                qco_mandatory=std["qco_mandatory"],
+                why_recommended=std.get("why_recommended_template") or std["scope"],
+                evidence_clauses=[EvidenceClause(clause_no=c["clause_no"], clause_name=c["clause_title"], matched_requirement="Catalog reference — applicability requires review", evidence_text=c["requirement_summary"]) for c in std.get("key_clauses", [])],
+                related_standards_summary=[r["code"] for r in std.get("related_standards", []) if r["code"] in all_codes],
             )
         )
 
     gaps = GapAnalysis(
         readiness_score=heuristics["gaps"]["readiness_score"],
         compliance_rating=heuristics["gaps"]["compliance_rating"],
-        missing_parameters=heuristics["gaps"]["missing"],
-        ambiguity_flags=heuristics["gaps"]["ambiguities"],
+        missing_parameters=[m for m in heuristics["gaps"]["missing"] if grounded_reference(m.recommended_clause + " " + m.suggested_text)],
+        ambiguity_flags=[a for a in heuristics["gaps"]["ambiguities"] if grounded_reference(a.fix_suggestion)],
         qco_compliance_alerts=heuristics["gaps"]["qco_alerts"],
-        recommended_spec_amendment=heuristics["gaps"]["spec_amendment"],
+        recommended_spec_amendment=heuristics["gaps"]["spec_amendment"] if grounded_reference(heuristics["gaps"]["spec_amendment"]) else "Review the catalog references above and confirm the applicable clauses against the official BIS publication before drafting a tender annexure.",
     )
 
     analysis_doc = ProcurementAnalysis(
@@ -563,10 +590,12 @@ async def analyze_requirement(payload: ProcurementAnalysisCreate):
         raw_text=payload.raw_text,
         document_name=payload.document_name,
         created_at=now_str,
-        status="completed",
+        status="completed" if recs else "no_results",
+        outcome="matched" if recs else "no_results",
+        outcome_message="Catalog-backed references. Extraction, relevance scores and gap suggestions use the existing demonstration profile, not a live RAG model." if recs else NO_RESULTS,
         extracted_intelligence=extracted,
         recommendations=recs,
-        gap_analysis=gaps,
+        gap_analysis=gaps if recs else GapAnalysis(readiness_score=0, compliance_rating="Not assessed", recommended_spec_amendment=""),
     )
 
     await db.analyses.insert_one(analysis_doc.model_dump())

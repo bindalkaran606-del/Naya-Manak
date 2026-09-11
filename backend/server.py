@@ -52,9 +52,6 @@ async def root():
 api_router.include_router(standards_router)
 api_router.include_router(analysis_router)
 
-# Include the main api_router in the app
-app.include_router(api_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -69,3 +66,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
+
+# All resource routes must be registered before this final include.
+app.include_router(api_router)

@@ -12,6 +12,7 @@ export const manakApi = {
   // Standards queries
   getStandards: async (params?: {
     search?: string;
+    product?: string;
     category?: string;
     status?: string;
     qco_only?: boolean;
@@ -20,6 +21,7 @@ export const manakApi = {
   }): Promise<StandardsQueryResponse> => {
     const query = new URLSearchParams();
     if (params?.search) query.set("search", params.search);
+    if (params?.product) query.set("product", params.product);
     if (params?.category && params.category !== "All") query.set("category", params.category);
     if (params?.status && params.status !== "All") query.set("status", params.status);
     if (params?.qco_only) query.set("qco_only", "true");

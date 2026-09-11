@@ -12,7 +12,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Lato', 'Helvetica Neue', sans-serif;
   --font-display: 'Source Serif 4 Variable', Georgia, serif;
   --font-sans: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
@@ -115,6 +115,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
@@ -122,7 +124,7 @@
     font-weight: 600;
     font-optical-sizing: auto;
   }
-  /* Institutional label typography (BIS-style all-caps metadata) */
+  /* Restrained technical typography; monospacing remains for actual data. */
   .font-mono {
     letter-spacing: 0.01em;
   }
@@ -131,7 +133,9 @@
     border-radius: 2px !important;
     border: 1px solid #C9BFAF !important;
     box-shadow: 0 18px 40px -18px rgba(11, 19, 43, 0.35) !important;
-    background: #FAF8F5 !important;
+    background: #FFFFFF !important;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
   [data-slot="dialog-content"] > button[data-slot="dialog-close"] {
     top: 0.9rem;
@@ -157,7 +161,7 @@ body::before {
   background-image: url('/manak-bg.webp');
   background-repeat: repeat;
   background-size: 620px 620px;
-  opacity: 0.32;
+  opacity: 0.12;
   pointer-events: none;
   z-index: 0;
   mask-image: radial-gradient(120% 90% at 50% 0%, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0) 80%);
@@ -186,11 +190,48 @@ body::before {
   background-image: url('/manak-bg.webp');
   background-repeat: repeat;
   background-size: 520px 520px;
-  opacity: 0.4;
+  opacity: 0.10;
   pointer-events: none;
   z-index: 0;
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
   -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+}
+
+/* Shared polish, deliberately scoped so the print annexure stays intact. */
+@media screen {
+  html { scroll-behavior: smooth; scroll-padding-top: 8rem; scrollbar-gutter: stable; }
+  main { min-width: 0; animation: workspace-enter 160ms ease-out; }
+  main h1 { font-weight: 700; letter-spacing: -0.025em; }
+  main :is(h2, h3, h4) { letter-spacing: -0.012em; }
+  :is(main, footer, [role="dialog"]) .uppercase { text-transform: none; letter-spacing: 0.01em; }
+  :is(main, footer, [role="dialog"]) :is(label, h2, h3, h4).font-mono { font-family: var(--font-sans); }
+  :is(main, [role="dialog"]) :is(p, label, select, input).text-xs { font-size: 0.8125rem; line-height: 1.65; }
+  :is(button, a, input, textarea, select) { transition-property: color, background-color, border-color, box-shadow, opacity; transition-duration: 140ms; }
+  :is(button, a, input, textarea, select, [tabindex="0"]):focus-visible { outline: 2px solid #B81D24; outline-offset: 3px; }
+  button:not(:disabled), [role="button"] { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  main .transition-all { transition-property: border-color, background-color, box-shadow, opacity; }
+  main .shadow-sm, main .shadow-md { box-shadow: 0 1px 3px #0b132b08; }
+  [data-slot="dialog-header"] { padding-right: 1.5rem; }
+  [data-slot="dialog-footer"] { gap: 0.75rem; }
+  :is([data-slot="dialog-content"], [data-slot="select-content"], [data-slot="dropdown-menu-content"], [data-slot="popover-content"]) { animation-duration: 150ms; border-radius: 4px; }
+  [data-slot="tabs-list"] { max-width: 100%; overflow-x: auto; justify-content: flex-start; }
+  [data-slot="tabs-trigger"] { flex-shrink: 0; white-space: nowrap; }
+  [data-slot="tabs-trigger"][data-selected] { background: #0B132B; color: white; }
+  .product-shortcut { border-radius: 3px; }
+  .catalog-products h2 { letter-spacing: -0.01em; }
+  .landing-intro h1 { font-family: var(--font-sans); }
+  #root > div > section .uppercase { text-transform: none; letter-spacing: 0.01em; }
+  [data-testid^="recent-analysis-row-"] > div { min-width: 0; }
+  [data-testid^="recent-analysis-row-"] .flex { flex-wrap: wrap; }
+  textarea { font-family: var(--font-sans) !important; font-size: 0.9375rem !important; }
+  [data-testid="compare-result-panel"] :is(td, th) { min-width: 7rem; vertical-align: top; }
+  [data-testid="compare-result-panel"] { overflow-wrap: anywhere; }
+}
+@keyframes workspace-enter { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 
 /* ---------------------------------------------------------------

@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [requirementText, setRequirementText] = useState("");
 
   const { data: analyses } = useQuery({
-    queryKey: ["analyses"],
+    queryKey: ["analyses", "dashboard"],
     queryFn: () => manakApi.getAnalyses(10),
   });
 
@@ -65,14 +65,14 @@ export default function Dashboard() {
         <section className="space-y-6">
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-widest text-slate-500 font-semibold">
-              Procurement Intelligence Portal
+              Procurement workspace
             </span>
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#0B132B]">
-                Good morning.
+                Your standards workspace
               </h1>
               <span className="text-xs text-slate-500 font-mono">
-                Demo Session · Prototype Access
+                Demo session · Curated catalog
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-semibold text-slate-700 tracking-tight">
@@ -100,10 +100,10 @@ export default function Dashboard() {
                   data-testid="dashboard-upload-pdf-button"
                 >
                   <Upload className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Upload PDF Tender</span>
+                  <span>PDF demonstration</span>
                 </Button>
                 <span className="text-[11px] text-slate-500 hidden md:inline">
-                  PDF / GeM Tender Document support
+                  Or paste text from your document
                 </span>
               </div>
 
@@ -112,7 +112,7 @@ export default function Dashboard() {
                 className="bg-[#B81D24] hover:bg-[#991319] text-white text-xs px-6 py-2.5 font-semibold shadow-sm flex items-center justify-center gap-2"
                 data-testid="dashboard-analyze-submit-button"
               >
-                <span>Analyze Requirement</span>
+                <span>Analyze requirement</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
@@ -123,10 +123,10 @@ export default function Dashboard() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-mono uppercase tracking-wider text-slate-500 font-bold">
-              Curated BIS Procurement Scenarios
+              Example procurement requirements
             </h3>
             <span className="text-[11px] text-slate-500 hidden sm:inline">
-              Sourced from BIS standards & Quality Control Orders
+              Editable demonstration profiles
             </span>
           </div>
 
@@ -165,10 +165,10 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <h3 className="text-xs font-mono uppercase tracking-wider text-slate-500 font-bold">
-                Recent Analyses
+                Recent analyses
               </h3>
               <p className="text-xs text-slate-600">
-                Audited procurement requirements and applicable standards
+                Your recent requirements and catalog findings
               </p>
             </div>
             <Link
@@ -211,15 +211,15 @@ export default function Dashboard() {
                         })}
                       </span>
                       <span>·</span>
-                      <span className="text-emerald-800">
-                        {item.gap_analysis?.readiness_score || 88}/100 Readiness
+                      <span className="text-slate-600" data-testid={`dashboard-outcome-${item.id}`}>
+                        {item.outcome === "no_results" ? "No catalog match" : item.outcome === "needs_clarification" ? "Clarification needed" : item.outcome === "catalog_only" ? "Catalog review needed" : `Demo readiness: ${item.gap_analysis?.readiness_score ?? 0}/100`}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 self-end sm:self-center">
                     <span className="text-xs font-medium text-slate-500 group-hover:text-[#0B132B] flex items-center gap-1">
-                      <span>View Intelligence</span>
+                      <span>View report</span>
                       <ChevronRight className="w-4 h-4 text-slate-400" />
                     </span>
                   </div>
@@ -240,25 +240,25 @@ export default function Dashboard() {
         {/* Bottom Metrics Bar */}
         <section className="p-5 bg-white rounded-sm border border-[#E5DFD5] grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           <div>
-            <span className="text-[10px] font-mono uppercase text-slate-500 block">Requirements Analysed</span>
+            <span className="text-[10px] font-mono uppercase text-slate-500 block">Saved requirements</span>
             <span className="font-mono text-lg font-bold text-[#0B132B]" data-testid="dashboard-stat-analyses">
               {stats?.total_analyses_completed ?? 0}
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase text-slate-500 block">IS Standards in Corpus</span>
+            <span className="text-[10px] font-mono uppercase text-slate-500 block">Standards in catalog</span>
             <span className="font-mono text-lg font-bold text-[#0B132B]" data-testid="dashboard-stat-standards">
               {stats?.total_standards_indexed ?? 0}
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase text-slate-500 block">Under Mandatory QCO</span>
+            <span className="text-[10px] font-mono uppercase text-slate-500 block">QCO catalog entries</span>
             <span className="font-mono text-lg font-bold text-[#B81D24]" data-testid="dashboard-stat-qco">
               {stats?.qco_mandatory_standards_count ?? 0}
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-mono uppercase text-slate-500 block">Statutory Compliance</span>
+            <span className="text-[10px] font-mono uppercase text-slate-500 block">Procurement reference</span>
             <span className="font-mono text-lg font-bold text-emerald-800">
               GFR 2017 R144
             </span>

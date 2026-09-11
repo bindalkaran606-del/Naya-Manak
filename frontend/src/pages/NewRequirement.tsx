@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
  import { useNavigate, useLocation } from "react-router-dom";
  import { 
    FileText, 
@@ -9,17 +9,21 @@ import { useState } from "react";
    ShieldCheck
  } from "lucide-react";
  import { Button } from "@/components/ui/button";
+ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
  import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
  import { Header } from "@/components/Header";
  import { Footer } from "@/components/Footer";
  import { ModelTransparencyModal } from "@/components/ModelTransparencyModal";
  import { manakApi } from "@/services/manakApi";
- import { useQuery, useMutation } from "@tanstack/react-query";
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
  import { toast } from "sonner";
  import type { PresetRequirement } from "@/types/standards";
  
  export default function NewRequirement() {
    const navigate = useNavigate();
+   const queryClient = useQueryClient();
+   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+   useEffect(() => () => timers.current.forEach(clearTimeout), []);
    const location = useLocation();
  
    const state = location.state as {
@@ -61,19 +65,26 @@ import { useState } from "react";
    const analyzeMutation = useMutation({
      mutationFn: manakApi.analyzeRequirement,
      onSuccess: (data) => {
+       queryClient.invalidateQueries({ queryKey: ["analyses"] });
+       queryClient.invalidateQueries({ queryKey: ["stats"] });
+       if (data.outcome !== "matched") {
+         setProcessingState(null);
+         navigate(`/analysis/${data.id}`);
+         return;
+       }
        // Step through the 4 refined pipeline states smoothly
        setProcessingState(1);
-       setTimeout(() => setProcessingState(2), 600);
-       setTimeout(() => setProcessingState(3), 1200);
-       setTimeout(() => setProcessingState(4), 1800);
-       setTimeout(() => {
+       timers.current.push(setTimeout(() => setProcessingState(2), 150));
+       timers.current.push(setTimeout(() => setProcessingState(3), 300));
+       timers.current.push(setTimeout(() => setProcessingState(4), 450));
+       timers.current.push(setTimeout(() => {
          setProcessingState(null);
          navigate(`/analysis/${data.id}`, { replace: true });
-       }, 2300);
+       }, 650));
      },
      onError: (err: any) => {
        setProcessingState(null);
-       toast.error(err?.body?.detail || "Could not analyze requirement. Please try again.");
+       toast.error(typeof err?.body?.detail === "string" ? err.body.detail : "We couldn’t analyze this requirement. Your text is still here; please try again.");
      },
    });
  
@@ -109,7 +120,7 @@ import { useState } from "react";
      setUploadedFileName(fileName);
      setRequirementText(sampleContent);
      setTitle(presetTitle);
-     toast.success(`Parsed tender PDF document: ${fileName}`);
+     toast.success(`Loaded demonstration document: ${fileName}`);
    };
  
    return (
@@ -123,34 +134,30 @@ import { useState } from "react";
              Dashboard
            </button>
            <span>/</span>
-           <span className="text-[#0B132B] font-semibold">New Procurement Requirement</span>
+           <span className="text-[#0B132B] font-semibold">New requirement</span>
          </div>
  
          {/* Page Header */}
          <div className="space-y-2 border-b border-[#E5DFD5] pb-6">
            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0B132B]">
-             New Procurement Requirement
+             New procurement requirement
            </h1>
            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-             Enter the procurement requirement or upload a document. MANAK AI will identify the relevant product characteristics and applicable Indian Standards.
+             Describe the product, material and intended use. We’ll check the available catalog and ask for clarification when the requirement is too broad.
            </p>
          </div>
  
          {/* Processing Pipeline Modal Overlay */}
          {processingState !== null && (
-           <div className="fixed inset-0 z-50 bg-[#0B132B]/75 backdrop-blur-sm flex items-center justify-center p-4">
-             <div className="bg-white rounded-sm border border-[#E5DFD5] shadow-2xl p-8 max-w-md w-full space-y-6 text-center guilloche-watermark">
+           <Dialog open>
+             <DialogContent showCloseButton={false} className="p-8 sm:max-w-md w-[calc(100%-2rem)] space-y-6" data-testid="analysis-processing-dialog">
                <div className="w-12 h-12 rounded-sm bg-[#B81D24] text-white flex items-center justify-center font-bold text-xl mx-auto shadow-md">
-                 मानक
+                 IS
                </div>
  
                <div className="space-y-1">
-                 <h3 className="text-base font-bold text-[#0B132B]">
-                   Analyzing Procurement Requirement
-                 </h3>
-                 <p className="text-xs text-slate-500 font-mono">
-                   SIH 26108 · Standards Intelligence Pipeline
-                 </p>
+                 <DialogTitle className="text-base font-bold text-[#0B132B]" data-testid="analysis-processing-title">Reviewing your requirement</DialogTitle>
+                 <DialogDescription className="text-sm text-slate-500" data-testid="analysis-processing-description">Checking the available catalog · Demo workflow</DialogDescription>
                </div>
  
                {/* Progress Steps List */}
@@ -186,22 +193,22 @@ import { useState } from "react";
  
                <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                  <div 
-                   className="bg-[#B81D24] h-full transition-all duration-500"
+                   className="bg-[#B81D24] h-full transition-[width] duration-150"
                    style={{ width: `${(processingState / 4) * 100}%` }}
                  />
                </div>
-             </div>
-           </div>
+             </DialogContent>
+           </Dialog>
          )}
  
          {/* Quick Sample Presets Loader */}
          <div className="bg-[#F3EFEA] border border-[#E5DFD5] rounded-sm p-4 space-y-2.5">
            <div className="flex items-center justify-between">
              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#0B132B]">
-               Quick Load Sample Procurement Specifications (SIH 26108)
+               Start with an example requirement
              </span>
              <span className="text-[11px] text-slate-500 hidden sm:inline">
-               1-Click Load
+               Editable examples
              </span>
            </div>
  
@@ -226,7 +233,7 @@ import { useState } from "react";
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
              <div>
                <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
-                 Tender Title / Subject
+                 Requirement title
                </label>
                <input
                  type="text"
@@ -240,7 +247,7 @@ import { useState } from "react";
  
              <div>
                <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
-                 BIS Technical Department
+                 BIS technical department
                </label>
                <input
                  type="text"
@@ -254,7 +261,7 @@ import { useState } from "react";
  
              <div>
                <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
-                 Sector Classification
+                 Sector
                </label>
                <select
                  value={sector}
@@ -280,21 +287,21 @@ import { useState } from "react";
                  className="text-xs font-medium data-[state=active]:bg-[#0B132B] data-[state=active]:text-white"
                  data-testid="tab-trigger-text-input"
                >
-                 Option 1: Paste / Type Requirement Text
+                 Enter text
                </TabsTrigger>
                <TabsTrigger 
                  value="upload" 
                  className="text-xs font-medium data-[state=active]:bg-[#0B132B] data-[state=active]:text-white"
                  data-testid="tab-trigger-pdf-upload"
                >
-                 Option 2: Upload Procurement PDF
+                 PDF demonstration
                </TabsTrigger>
              </TabsList>
  
              {/* Tab 1: Text Input */}
              <TabsContent value="text" className="space-y-3 pt-2">
                <label className="block text-xs font-mono uppercase text-slate-500 font-semibold">
-                 Procurement Specification Text
+                 Procurement requirement
                </label>
                <textarea
                  value={requirementText}
@@ -314,10 +321,10 @@ import { useState } from "react";
                  </div>
                  <div className="space-y-1">
                    <h4 className="text-sm font-bold text-[#0B132B]">
-                     Drag and drop your Tender or RFP PDF here
+                     Preview a requirement document
                    </h4>
                    <p className="text-xs text-slate-500">
-                     Supports GeM Bids, CPWD Nit PDFs, PWD schedules, or scanned procurement docs (up to 25MB)
+                     PDF parsing is simulated in this version. Choose an existing example below, or paste your own document text in the text tab.
                    </p>
                  </div>
  
@@ -348,7 +355,7 @@ import { useState } from "react";
                    <div className="flex items-center gap-2 font-mono">
                      <FileCheck className="w-4 h-4 text-emerald-700" />
                      <span className="font-semibold text-[#0B132B]">{uploadedFileName}</span>
-                     <span className="text-slate-500">(Document parsed successfully)</span>
+                     <span className="text-slate-500">(Demo content loaded)</span>
                    </div>
                    <Button
                      variant="ghost"
@@ -381,7 +388,7 @@ import { useState } from "react";
            <div className="pt-4 border-t border-[#E5DFD5] flex flex-col sm:flex-row items-center justify-between gap-4">
              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
                <ShieldCheck className="w-4 h-4 text-[#B81D24]" />
-               <span>Evaluated against 22,000+ Indian Standards & Mandatory QCOs</span>
+               <span>Checks only the available IS catalog · Human review required</span>
              </div>
  
              <Button
@@ -391,7 +398,7 @@ import { useState } from "react";
                className="w-full sm:w-auto bg-[#B81D24] hover:bg-[#991319] text-white px-8 py-6 text-sm font-semibold shadow-md flex items-center justify-center gap-2"
                data-testid="new-requirement-analyze-button"
              >
-               <span>{analyzeMutation.isPending || processingState !== null ? "Analyzing..." : "Analyze Requirement"}</span>
+               <span>{analyzeMutation.isPending || processingState !== null ? "Analyzing…" : "Analyze requirement"}</span>
                <ArrowRight className="w-4 h-4" />
              </Button>
            </div>

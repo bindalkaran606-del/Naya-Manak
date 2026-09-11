@@ -75,3 +75,10 @@
 - Standard detail lookup no longer guesses the first matching prefix or treats arbitrary input as regex. Compare highlights that same clause numbers do not establish technical equivalence and has retryable error handling.
 - No login is required; demonstration session and existing login placeholder remain unchanged.
 - History and dashboard distinguish no match / clarification / catalog-only outcomes instead of falling back to fabricated 88/100 readiness. History deletion now uses a consistent confirmation dialog with retryable errors. Landing removes live-RAG, complete-coverage and guaranteed-compliance claims while preserving entry and example flows.
+
+## Screenshot-focused visual refinement
+- UI-only pass: new requirement examples become numbered text rows, intake becomes a compact document-style form, department/title fields have more room, and text/PDF tabs use an underline treatment. Landing intake uses concise copy and linked examples.
+- Catalog records use proportional sans-serif identifiers and quiet inline status/QCO metadata instead of competing badges. Recent analyses form one continuous register rather than repeated cards; metadata and footer use Lato rather than monospaced body text.
+- Top utility bar uses Lato, plain project attribution and a clear official BIS link; removed the amber project badge. Desktop active navigation uses a red underline. Related dialogs retain focus/escape behavior with a compact red-rule document treatment and scroll-contained content.
+- Footer heading is an active `Official BIS resources` link to the existing official `https://www.bis.gov.in/?lang=en` destination, opens in a new tab with `noopener noreferrer`.
+- No backend, API, analysis engine, database, catalog records, dependencies, environment variables or deployment configuration changed. Existing mock analysis/PDF limitations are unchanged. Print styling remains scoped and intact.

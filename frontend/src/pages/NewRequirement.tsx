@@ -202,40 +202,43 @@ import { useEffect, useRef, useState } from "react";
          )}
  
          {/* Quick Sample Presets Loader */}
-         <div className="bg-[#F3EFEA] border border-[#E5DFD5] rounded-sm p-4 space-y-2.5">
+         <div className="requirement-examples" data-testid="requirement-examples-panel">
            <div className="flex items-center justify-between">
-             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#0B132B]">
-               Start with an example requirement
+             <span className="text-sm font-semibold text-[#0B132B]" data-testid="requirement-examples-heading">
+               Example requirements
              </span>
              <span className="text-[11px] text-slate-500 hidden sm:inline">
-               Editable examples
+               Select to edit
              </span>
            </div>
  
-           <div className="flex flex-wrap gap-2">
-             {presets?.map((p) => (
+           <div className="example-index">
+             {presets?.map((p, index) => (
                <button
                  key={p.id}
                  type="button"
                  onClick={() => handleSelectPreset(p)}
-                 className="text-xs px-3 py-1.5 rounded-sm bg-white hover:bg-slate-100 border border-[#E5DFD5] text-[#0B132B] font-medium transition-colors shadow-xs"
+                 className="example-index-link"
                  data-testid={`quick-sample-button-${p.id}`}
                >
-                 {p.title.split(" &")[0]}
+                 <span className="example-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                 <span data-testid={`example-label-${p.id}`}>{p.title.split(" &")[0]}</span>
                </button>
              ))}
            </div>
          </div>
  
          {/* Main Dual-Input Workspace */}
-         <div className="bg-white rounded-sm border border-[#E5DFD5] shadow-sm p-6 sm:p-8 space-y-6">
+         <div className="requirement-workspace bg-white border border-[#E5DFD5] p-5 sm:p-6 space-y-5" data-testid="requirement-workspace">
+           <div className="sheet-section-heading" data-testid="requirement-details-heading"><span aria-hidden="true">01</span> Requirement details</div>
            {/* Metadata Row */}
-           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-             <div>
-               <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <div className="sm:col-span-2">
+               <label htmlFor="requirement-title" className="block text-xs text-slate-600 mb-1 font-semibold">
                  Requirement title
                </label>
                <input
+                 id="requirement-title"
                  type="text"
                  value={title}
                  onChange={(e) => setTitle(e.target.value)}
@@ -246,10 +249,11 @@ import { useEffect, useRef, useState } from "react";
              </div>
  
              <div>
-               <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
+               <label htmlFor="requirement-department" className="block text-xs text-slate-600 mb-1 font-semibold">
                  BIS technical department
                </label>
                <input
+                 id="requirement-department"
                  type="text"
                  value={department}
                  onChange={(e) => setDepartment(e.target.value)}
@@ -260,10 +264,11 @@ import { useEffect, useRef, useState } from "react";
              </div>
  
              <div>
-               <label className="block text-xs font-mono uppercase text-slate-500 mb-1 font-semibold">
+               <label htmlFor="requirement-sector" className="block text-xs text-slate-600 mb-1 font-semibold">
                  Sector
                </label>
                <select
+                 id="requirement-sector"
                  value={sector}
                  onChange={(e) => setSector(e.target.value)}
                  className="w-full text-xs p-2.5 rounded-sm border border-[#E5DFD5] bg-[#FAF8F5] focus:ring-1 focus:ring-[#B81D24] focus:outline-none"
@@ -306,8 +311,9 @@ import { useEffect, useRef, useState } from "react";
                <textarea
                  value={requirementText}
                  onChange={(e) => setRequirementText(e.target.value)}
-                 rows={10}
-                 placeholder="Paste the technical specification, scope of work, bill of quantities (BOQ), or Notice Inviting Tender (NIT) paragraph here..."
+                 rows={7}
+                 aria-label="Procurement requirement"
+                 placeholder="Describe the product, intended use and technical requirements. You can also paste a specification from your tender."
                  className="w-full p-4 text-xs font-mono text-slate-800 bg-[#FAF8F5] border border-[#E5DFD5] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#B81D24] focus:border-[#B81D24] resize-y leading-relaxed"
                  data-testid="textarea-requirement-full-text"
                />

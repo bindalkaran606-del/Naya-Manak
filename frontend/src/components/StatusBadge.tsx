@@ -14,43 +14,44 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   qcoMandatory,
   className = "",
 }) => {
+  const id = `standard-status-${React.useId().replace(/[^a-zA-Z0-9-]/g, "").toLowerCase()}`;
   const normalized = (status || "current").toLowerCase();
 
-  let badgeStyle = "bg-emerald-50 text-emerald-800 border-emerald-300";
+  let badgeStyle = "text-emerald-800";
   let label = "Current";
   let icon = <CheckCircle2 className="w-3 h-3 text-emerald-600" />;
 
   if (normalized.includes("revision") || normalized === "under_revision") {
-    badgeStyle = "bg-amber-50 text-amber-800 border-amber-300";
-    label = "Under Revision";
+    badgeStyle = "text-amber-800";
+    label = "Under revision";
     icon = <AlertTriangle className="w-3 h-3 text-amber-600" />;
   } else if (normalized.includes("withdraw") || normalized === "withdrawn" || normalized === "superseded") {
-    badgeStyle = "bg-rose-50 text-rose-800 border-rose-300";
-    label = "Withdrawn / Superseded";
+    badgeStyle = "text-rose-800";
+    label = "Withdrawn / superseded";
     icon = <XCircle className="w-3 h-3 text-rose-600" />;
   }
 
   return (
-    <div className={`inline-flex items-center gap-2 ${className}`} data-testid="is-status-badge-container">
+    <div className={`standard-status inline-flex flex-wrap items-center gap-x-3 gap-y-1 ${className}`} data-testid={id}>
       <span
-        className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium border font-mono tracking-tight ${badgeStyle}`}
-        data-testid="is-status-pill"
+        className={`inline-flex items-center gap-1.5 text-xs font-sans ${badgeStyle}`}
+        data-testid={`${id}-label`}
       >
         {icon}
         <span>{label}</span>
         {reaffirmationYear && (
-          <span className="text-[10px] opacity-75">({reaffirmationYear})</span>
+          <span className="text-[11px] text-slate-500" title={`Reaffirmed in ${reaffirmationYear}`} data-testid={`${id}-reaffirmation`}>· {reaffirmationYear}</span>
         )}
       </span>
 
       {qcoMandatory && (
         <span
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0B132B] text-white border border-slate-700 font-mono"
+          className="inline-flex items-center gap-1.5 text-xs text-[#334155] border-l border-[#E5DFD5] pl-3"
           title="Covered under Mandatory Quality Control Order (QCO)"
-          data-testid="qco-mandatory-badge"
+          data-testid={`${id}-qco`}
         >
-          <ShieldCheck className="w-3 h-3 text-amber-400" />
-          <span>QCO MANDATORY</span>
+          <ShieldCheck className="w-3 h-3 text-[#334155]" />
+          <span>Mandatory QCO</span>
         </span>
       )}
     </div>

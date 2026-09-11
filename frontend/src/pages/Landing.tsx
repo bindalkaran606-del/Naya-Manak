@@ -128,16 +128,15 @@ export default function Landing() {
           </div>
 
           {/* Quick Interactive Requirement Box on Landing */}
-          <div className="mt-10 max-w-3xl bg-white rounded-sm border border-[#E5DFD5] shadow-xs p-4 sm:p-6">
+          <div className="landing-intake mt-10 max-w-3xl bg-white border border-[#E5DFD5] p-5 sm:p-6" data-testid="landing-intake-panel">
             <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#B81D24]" />
-                <span className="text-xs font-semibold text-[#0B132B] uppercase tracking-wider font-mono">
-                  Start with your requirement
+                <span className="text-sm font-semibold text-[#0B132B]" data-testid="landing-intake-heading">
+                  What are you procuring?
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
-                Type text or choose a BIS-referenced scenario
+              <span className="text-xs text-slate-500 hidden sm:inline" data-testid="landing-intake-hint">
+                Your starting point for standards research
               </span>
             </div>
 
@@ -145,19 +144,20 @@ export default function Landing() {
               <textarea
                 value={quickInput}
                 onChange={(e) => setQuickInput(e.target.value)}
-                placeholder="Describe what you are procuring (e.g., 'Supply of 70W and 120W outdoor LED street lighting luminaires with IP66 optical compartment, CCT 5000K, and 10kV surge protection...')"
+                aria-label="Describe your procurement requirement"
+                placeholder="Describe the product and where it will be used. For example, outdoor LED lighting for municipal roads."
                 className="w-full h-24 p-3.5 text-xs text-slate-800 bg-[#FAF8F5] border border-[#E5DFD5] rounded-sm focus:outline-none focus:ring-1 focus:ring-[#B81D24] focus:border-[#B81D24] resize-none leading-relaxed"
                 data-testid="landing-quick-input-textarea"
               />
 
               {/* Sample Preset Chips */}
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="text-[11px] font-mono text-slate-500">BIS scenarios:</span>
+              <div className="intake-examples flex flex-wrap items-center gap-x-4 gap-y-1 pt-1">
+                <span className="text-xs text-slate-500" data-testid="landing-examples-label">Try an example</span>
                 {presets?.slice(0, 3).map((p) => (
                   <button
                     key={p.id}
                     onClick={() => handleSelectPreset(p.sample_text, p.title)}
-                    className="text-[11px] px-2.5 py-1 rounded-sm bg-[#F3EFEA] hover:bg-[#E5DFD5] text-[#0B132B] font-medium transition-colors border border-[#E5DFD5] flex items-center gap-1"
+                    className="text-xs py-1.5 text-[#334155] hover:text-[#B81D24] underline decoration-[#E5DFD5] underline-offset-4 hover:decoration-[#B81D24] flex items-center gap-1 text-left"
                     data-testid={`landing-preset-${p.id}`}
                   >
                     <span>{p.title.split(" &")[0]}</span>
@@ -166,7 +166,7 @@ export default function Landing() {
                 ))}
               </div>
 
-              <div className="pt-2 flex items-center justify-between">
+              <div className="pt-3 border-t border-[#E5DFD5] flex flex-wrap items-center justify-between gap-3">
                 <span className="text-[11px] text-slate-500">
                   Checks the available catalog only
                 </span>

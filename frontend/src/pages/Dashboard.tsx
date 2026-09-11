@@ -161,10 +161,10 @@ export default function Dashboard() {
         </section>
 
         {/* Recent Analyses Section */}
-        <section className="space-y-4 pt-4 border-t border-[#E5DFD5]">
+        <section className="recent-register space-y-4 pt-4 border-t border-[#E5DFD5]" data-testid="dashboard-recent-register">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-slate-500 font-bold">
+              <h3 className="text-base text-[#0B132B] font-semibold" data-testid="dashboard-recent-heading">
                 Recent analyses
               </h3>
               <p className="text-xs text-slate-600">
@@ -173,33 +173,37 @@ export default function Dashboard() {
             </div>
             <Link
               to="/history"
-              className="text-xs font-semibold text-[#B81D24] hover:underline flex items-center gap-1 font-mono"
+              className="text-sm text-[#B81D24] hover:underline flex items-center gap-1"
               data-testid="dashboard-view-all-history-link"
             >
-              View all history →
+              All analyses →
             </Link>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="recent-register-rows">
             {analyses && analyses.length > 0 ? (
               analyses.slice(0, 5).map((item) => (
                 <div
                   key={item.id}
                   onClick={() => navigate(`/analysis/${item.id}`)}
-                  className="p-4 bg-white hover:bg-[#FAF8F5] border border-[#E5DFD5] hover:border-slate-400 rounded-sm transition-all duration-200 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
+                  onKeyDown={(event) => { if (event.key === "Enter") navigate(`/analysis/${item.id}`); }}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Open analysis: ${item.title}`}
+                  className="recent-register-row cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   data-testid={`recent-analysis-row-${item.id}`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[#0B132B]">
+                      <span className="font-semibold text-sm text-[#0B132B]" data-testid={`recent-title-${item.id}`}>
                         {item.title}
                       </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 bg-[#F3EFEA] text-slate-700 rounded border border-[#E5DFD5]">
+                      <span className="text-xs text-slate-500" data-testid={`recent-sector-${item.id}`}>
                         {item.sector.split("&")[0]}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
-                      <span className="text-[#B81D24] font-semibold">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                      <span className="text-[#334155]" data-testid={`recent-recommendation-count-${item.id}`}>
                         {item.recommendations?.length || 0} standards recommended
                       </span>
                       <span>·</span>

@@ -24,29 +24,28 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E5DFD5]" data-testid="app-header">
       {/* Institutional Top Bar */}
-      <div className="bg-[#0B132B] text-slate-300 text-[11px] py-1 px-4 sm:px-8 flex items-center justify-between font-mono tracking-wide border-b border-slate-800">
+      <div className="manak-utility-bar" data-testid="header-utility-bar">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-white font-medium">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E67E22]" />
-            Indian Standards · Procurement research
+          <span className="utility-title" data-testid="header-utility-title">
+            Indian Standards <span className="hidden sm:inline">/ Procurement research</span>
           </span>
-          <span className="hidden md:inline text-slate-400">|</span>
-          <span className="hidden md:inline text-slate-300">
-            An independent SIH 2026 project
+          <span className="hidden md:inline utility-divider" aria-hidden="true" />
+          <span className="hidden md:inline utility-caption" data-testid="header-project-caption">
+            Independent academic project
           </span>
         </div>
         <div className="flex items-center gap-3 text-[11px]">
-          <span className="hidden sm:inline-flex items-center gap-1 text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
-            SIH 2026 · Problem SIH 26108
+          <span className="hidden lg:inline utility-caption" data-testid="header-project-reference">
+            SIH 2026 / 26108
           </span>
           <a
             href="https://www.bis.gov.in/?lang=en"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white flex items-center gap-1 text-slate-400 transition-colors"
+            className="utility-resource-link"
             data-testid="bis-official-link"
           >
-            bis.gov.in
+            Official BIS website
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -75,6 +74,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
           <nav className="hidden xl:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
             <Link
               to="/dashboard"
+              aria-current={isActive("/") || isActive("/dashboard") ? "page" : undefined}
               className={`px-3 py-1.5 rounded-sm transition-colors ${
                 isActive("/") || isActive("/dashboard")
                   ? "bg-[#0B132B] text-white font-semibold"
@@ -86,6 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
             </Link>
             <Link
               to="/new"
+              aria-current={isActive("/new") ? "page" : undefined}
               className={`px-3 py-1.5 rounded-sm transition-colors ${
                 isActive("/new")
                   ? "bg-[#0B132B] text-white font-semibold"
@@ -97,6 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
             </Link>
             <Link
               to="/standards"
+              aria-current={isActive("/standards") ? "page" : undefined}
               className={`px-3 py-1.5 rounded-sm transition-colors ${
                 isActive("/standards")
                   ? "bg-[#0B132B] text-white font-semibold"
@@ -108,6 +110,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
             </Link>
             <Link
               to="/compare"
+              aria-current={isActive("/compare") ? "page" : undefined}
               className={`px-3 py-1.5 rounded-sm transition-colors ${
                 isActive("/compare")
                   ? "bg-[#0B132B] text-white font-semibold"
@@ -119,6 +122,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenTransparency }) => {
             </Link>
             <Link
               to="/history"
+              aria-current={isActive("/history") ? "page" : undefined}
               className={`px-3 py-1.5 rounded-sm transition-colors ${
                 isActive("/history")
                   ? "bg-[#0B132B] text-white font-semibold"

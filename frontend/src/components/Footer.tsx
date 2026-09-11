@@ -4,7 +4,7 @@ import { ShieldCheck, ExternalLink, FileCheck, Scale } from "lucide-react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="mt-20 border-t border-[#E5DFD5] bg-[#FAF8F5] text-slate-600 text-xs py-12">
+    <footer className="manak-footer mt-12 border-t border-[#E5DFD5] bg-[#FAF8F5] text-slate-600 text-xs py-8" data-testid="app-footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#E5DFD5]">
           {/* Col 1: Institutional Authority */}
@@ -17,16 +17,15 @@ export const Footer: React.FC = () => {
             <p className="text-slate-600 text-xs leading-relaxed">
               Indian Standards research and specification review for procurement teams. An independent academic prototype.
             </p>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-              SIH 2026 Problem ID: SIH 26108
+            <div className="text-xs text-slate-500" data-testid="footer-project-reference">
+              Smart India Hackathon 2026 · SIH 26108
             </div>
           </div>
 
           {/* Col 2: Procurement Standards */}
           <div className="space-y-2">
             <h4 className="font-semibold text-[#0B132B] text-xs uppercase tracking-wider font-mono">
-              Standards resources
+              <a href="https://www.bis.gov.in/?lang=en" target="_blank" rel="noopener noreferrer" className="official-resource-action" data-testid="footer-official-bis-resources">Official BIS resources <ExternalLink className="size-3.5" aria-hidden="true" /></a>
             </h4>
             <ul className="space-y-1.5">
               <li>
@@ -84,7 +83,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Col 4: Human-in-the-Loop Oversight Principle */}
-          <div className="space-y-2 bg-[#F3EFEA] p-3.5 rounded-sm border border-[#E5DFD5]">
+          <div className="space-y-2 border-l-2 border-[#E5DFD5] pl-4">
             <div className="flex items-center gap-1.5 text-[#0B132B] font-semibold text-xs">
               <ShieldCheck className="w-4 h-4 text-[#B81D24]" />
               <span>Human review comes first</span>
@@ -96,17 +95,14 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom copyright & attribution */}
-        <div className="pt-6 space-y-3 text-[11px] text-slate-500 font-mono">
+        <div className="pt-5 space-y-4 text-xs text-slate-500">
           <p className="text-center sm:text-left leading-relaxed" data-testid="footer-bis-attribution">
-            Standard numbers, titles, technical departments, Quality Control Order status and conformity assessment
-            scheme references are sourced from the Bureau of Indian Standards (bis.gov.in) — the National Standards
-            Body of India established under the BIS Act, 2016. This prototype indexes a curated subset of Indian
-            Standards across selected categories and is designed to scale; it is not a complete catalogue of Indian
-            Standards.
+            A curated selection of Indian Standards, not the complete BIS catalog. Check the official BIS publication
+            for current status, clauses and certification requirements before use.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div>© 2026 MANAK AI · Developed for Smart India Hackathon 2026 (SIH 26108)</div>
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div data-testid="footer-copyright">© 2026 MANAK AI · Smart India Hackathon</div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1" data-testid="footer-independent-notice">
               <span>Independent project · Not an official BIS service</span>
               <span>·</span>
               <span>New Delhi, India</span>

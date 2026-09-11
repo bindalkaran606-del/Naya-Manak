@@ -227,12 +227,12 @@ export default function StandardsCatalog() {
                 tabIndex={0}
                 role="link"
                 aria-label={`View ${std.code}`}
-                className="p-5 hover:bg-[#FAF8F5] transition-colors duration-150 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                className="catalog-record p-5 hover:bg-[#FAF8F5] transition-colors duration-150 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
                 data-testid={`catalog-standard-row-${i}`}
               >
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="font-mono font-bold text-sm sm:text-base text-[#B81D24] group-hover:underline">
+                    <span className="catalog-record-code font-semibold text-sm text-[#B81D24] group-hover:underline" data-testid={`catalog-code-${i}`}>
                       {std.code}
                     </span>
                     <StatusBadge
@@ -240,18 +240,18 @@ export default function StandardsCatalog() {
                       reaffirmationYear={std.reaffirmation_year}
                       qcoMandatory={std.qco_mandatory}
                     />
-                    <span className="text-[10px] font-mono px-2 py-0.5 bg-[#FAF8F5] text-slate-600 border border-[#E5DFD5]">
+                    <span className="text-xs text-slate-500" data-testid={`catalog-category-${i}`}>
                       {std.category}
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-[#0B132B] group-hover:text-[#B81D24] transition-colors leading-snug">
+                  <h3 className="text-sm font-semibold text-[#0B132B] leading-snug" data-testid={`catalog-title-${i}`}>
                     {std.title}
                   </h3>
 
                   <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{std.scope}</p>
 
-                  <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-mono text-slate-500">
+                  <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500" data-testid={`catalog-metadata-${i}`}>
                     <span>Committee: {std.technical_committee}</span>
                     <span className="hidden sm:inline">·</span>
                     <span>ICS: {std.ics_code}</span>
@@ -266,12 +266,12 @@ export default function StandardsCatalog() {
                       e.stopPropagation();
                       navigate(`/compare?a=${encodeURIComponent(std.code)}`);
                     }}
-                    className="text-[11px] font-mono px-2.5 py-1 border border-[#E5DFD5] text-slate-600 hover:bg-[#F3EFEA] hover:text-[#0B132B] transition-colors"
+                    className="text-xs px-3 py-2 border border-[#E5DFD5] text-[#334155] hover:border-[#0B132B] hover:bg-white transition-colors"
                     data-testid={`catalog-compare-button-${i}`}
                   >
                     Compare
                   </button>
-                  <span className="text-xs font-semibold text-slate-600 group-hover:text-[#0B132B] flex items-center gap-1 font-mono">
+                  <span className="text-xs text-slate-600 group-hover:text-[#0B132B] flex items-center gap-1">
                     <span>View clauses</span>
                     <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                   </span>

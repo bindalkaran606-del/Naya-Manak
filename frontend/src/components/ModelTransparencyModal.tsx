@@ -21,18 +21,18 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[min(95vw,52rem)] sm:max-w-[52rem] max-h-[85vh] overflow-y-auto bg-[#FAF8F5] border-[#E5DFD5] p-6">
+      <DialogContent className="scope-sheet w-[min(95vw,44rem)] sm:max-w-[44rem] max-h-[85vh] overflow-y-auto bg-white border-[#E5DFD5] p-6" data-testid="scope-sources-dialog">
         <DialogHeader className="border-b border-[#E5DFD5] pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded bg-[#B81D24] text-white flex items-center justify-center font-bold text-sm">
+            <div className="border-l-2 border-[#B81D24] pl-2 pr-3 text-[#0B132B] font-semibold text-sm" data-testid="scope-document-mark">
               IS
             </div>
             <div>
               <DialogTitle className="text-lg font-bold text-[#0B132B]">
                 Scope and sources
               </DialogTitle>
-              <DialogDescription className="text-xs text-slate-500 font-mono">
-                Smart India Hackathon 2026 · Problem Statement SIH 26108
+              <DialogDescription className="text-xs text-slate-500">
+                MANAK AI / Research notes and limitations
               </DialogDescription>
             </div>
           </div>
@@ -48,7 +48,7 @@ export const ModelTransparencyModal: React.FC<ModelTransparencyModalProps> = ({
             <p className="text-slate-600">
               This checked-out version uses a mock heuristic analysis engine and an existing MongoDB catalog. It does not call a live LLM or vector retrieval service. Catalog references are the source for standard identities and evidence; demonstration scores and gap suggestions are not verified compliance findings.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="scope-method-list pt-1">
               <div className="p-3 bg-white rounded-sm border border-[#E5DFD5]">
                 <span className="font-semibold text-[#B81D24] block">Requirement review</span>
                 <span className="text-sm text-slate-600">Narrow product checks protect the existing demo profiles from unrelated or ambiguous queries.</span>
